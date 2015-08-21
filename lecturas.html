@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>lecturas</title>
+    <html manifest="default-jquery.appcache">
+    <meta charset="utf-8" />
+    <!-- make it ios web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- home screen icon -->
+    <link rel="apple-touch-icon" sizes="152x152" href="lecturas-152x152.png" />
+    <!-- favicon -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <!-- Include meta tag to ensure proper rendering and touch zooming -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Include jQuery Mobile stylesheets -->
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <!-- Include the jQuery library -->
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <!-- Include the jQuery Mobile library -->
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <!-- toast -->
+    <link href="http://www.arrietaeguren.es/sop/toastr//toastr2.css" rel="stylesheet"/>
+    <script src="http://www.arrietaeguren.es/sop/toastr//toastr.js"></script>
+
+  </head>
+
+    <body>
+        
+    <div data-role="page" id="mainPage">
+
+         <div data-role="main" class="ui-content" id="text">
+            <!-- Text size elements -->
+            <div>
+                <p >
+                    <span style="font-size:200%; color:blue" onclick="changeFontSize(-10)">A </span>   <span style="font-size:300%; color:blue" onclick="changeFontSize(+10)">  A</span>
+                    <hr >
+                </p>
+            </div>
+            <span id="mStart"></span>
+            <!-- end Text size elements  -->
+            
+            <p id="date">sorry, we will fix this error. Try again later</p>
+    
+         
+            <p id="lec1"></p><br><br>
+            <p id="lec2"></p>
+            <p id="salmo"></p><br><br>
+            <p id="evan"></p><br><br>
+            <hr>
+            <p id="mSource" style="font-size:70%">source: www.ciudadredonda.org</p>
+        
+        </div>
+    </div>
+
+    <script>
+            //toastr options
+            toastr.options = {"closeButton": false,"debug": false,"newestOnTop": false,
+              "progressBar": false, "positionClass": "toast-bottom-center","preventDuplicates": true,
+              "onclick": null,"showDuration": "300","hideDuration": "1000",
+              "timeOut": "10500","extendedTimeOut": "1000","showEasing": "swing",
+              "hideEasing": "linear","showMethod": "fadeIn","hideMethod": "fadeOut"
+            }
+
+            var currentversion = 0.26;
+            //***************
+            //----to new users (checking version)
+            //***************
+            if (localStorage.mVersion){
+                if (localStorage.mVersion != currentversion){
+                    //toastr.success("welcome to version "+currentversion+" :)<br>Swipe left and right to go to next/previous days");
+                toastr.info("Swipe right and left to go to next/previous days<br /><br /><button type='button' class='btn clear'>Awesome!</button>", "Welcome to version "+currentversion);
+
+                    //----- to updating users: -------------
+                    localStorage.clear();
+                    
+                    //-----------------
+                    localStorage.mVersion = currentversion;
+
+                }
+            }else{
+                localStorage.mVersion = currentversion;
+            }//----------------
+
+            var offset = 0;
+            
+            var msize = 100;
+            
+
+            
+            if (localStorage.msize){
+                msize = parseInt(localStorage.msize);
+                changeFontSize(0);
+            }else{
+                localStorage.msize = msize;
+            }
+
+            
+            
+            $( document ).delegate("#mainPage", "pagebeforeshow", function() {
+               requestJson();
+               
+               
+           });//--end    
+
+          function requestJson(date){
+            var xmlhttp = new XMLHttpRequest();
+            var url = "getLecturas.php";
+            if (date){
+                if (date!=""){
+                    url = url + "?date="+date;
+                }
+                
+            }
+            xmlhttp.onreadystatechange=function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    myRefresh(xmlhttp.responseText);
+                    //go to start of the document
+                    if (window.localStorage.msize){
+                        document.location.href = "#mStart";
+                    }
+                    if (date){
+                        //toastr.success(date);
+                    }
+                }
+            }
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+          } //end requestJson() 
+
+          function myRefresh(jsonString) {
+                data = JSON.parse(jsonString);
+                document.getElementById("lec1").innerHTML = data.primeralectura;
+                document.getElementById("lec2").innerHTML = data.segundalectura? data.segundalectura+"<br><br>": "";
+                document.getElementById("salmo").innerHTML = data.salmo;
+                document.getElementById("evan").innerHTML = data.evangelio;
+                document.getElementById("date").innerHTML = data.mdate;
+                
+                
+            
+          }//end function myRefresh()    
+
+          $("#mainPage").on("swipeleft",function(){ 
+            offset = offset+1; 
+            date = getmDate(offset);
+            
+            requestJson( date ); 
+          });                       
+        
+          $("#mainPage").on("swiperight",function(){
+            offset = offset-1;
+            date = getmDate(offset);
+            requestJson(date); 
+          });
+
+          function getmDate(offset){
+                d = new Date();
+                d.setDate(d.getDate()+offset);
+            
+                
+               var year = d.getFullYear();
+               var month = d.getMonth()+1; // getMonth() is zero-based
+               var day  = d.getDate();
+
+               var yyyy, mm, dd;
+               yyyy = ""+year; 
+               if (month<10){
+                mm = "0"+month;
+               }else{
+                mm = ""+month;
+               }
+               if (day<10){
+                dd = "0"+day;
+               }else{
+                dd = day;
+               }
+               
+               var total = yyyy+"-"+mm+"-"+dd;
+              
+               return total;
+        
+          }//end getmDate()   
+
+          //change-font function-----------------
+            //(this functions gets to all the p objects the same size: that changes "increment")
+          function changeFontSize(increment){
+            
+            msize = msize+increment;
+            
+            //document.getElementById("date").style.fontSize = ""+(msize+50)+"%";
+            var list = document.getElementsByTagName("p");
+            for (var i = 0; i < list.length; i++) {
+                
+                list[i].style.fontSize = ""+(msize)+"%";
+            };
+            localStorage.msize = msize;
+
+          
+          }
+
+    </script>
+    </body>
+</html> 
