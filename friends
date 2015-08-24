@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en" manifest="friends.appcache">
+
+   <title>friends</title>
+
+   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <!-- make it ios web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" sizes="152x152" href="cards-152x152.png" />
+
+    <!-- rest of libraries/settings-->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+   <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+  <!-- toast -->
+  <link href="toast/toastr2.css" rel="stylesheet"/>
+  <script src="toast/toastr.js"></script>
+
+
+</head>
+
+
+
+
+
+<body onload="init()">
+
+
+
+<!-- ***********   CARDS-PAGE **********************  -->
+<div data-role="page" id="cards-page">
+  <!-- HEADER -->
+  <!--<div data-role="header"  data-position="fixed">
+    <h1>Friends tool</h1>
+  </div> -->
+
+  <!-- panel -->
+  <div data-role="panel" id="myMenuPanel"> 
+    <h2>Menu</h2>
+    <p>Let's add here settings and those things.</p>
+    <a href="#editFriend-page" class="ui-btn ui-corner-all ui-icon-edit ui-btn-icon-left">Edit current friend</a>
+    <a href="#friend-list-page" class="ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left">View friends list</a>
+    <a href="#addFriend-page" class="ui-btn ui-corner-all ui-icon-plus ui-btn-icon-left">Add friend</a>
+     
+    <a href="#backup2-page" class="ui-btn ui-corner-all ui-icon-cloud ui-btn-icon-left">Backup</a>  
+    
+    <hr>
+    <a href="#developer-page" class="ui-btn ui-corner-all ui-icon-gear ui-btn-icon-left">Developer</a>
+    
+
+  </div> <!-- end panel -->
+
+  <!-- MAIN -->
+  <div data-role="main" class="ui-content">
+
+    <div id="myCard" class="ui-content">      
+        <h1 id="friendName">Friend name!</h1>
+        <hr>
+        <p style="margin-left:10px;" id="intention">Intentions should go here...</p>
+
+<!--        <hr>
+
+         <label for="need-slider">Need:</label>
+        <div id="div-slider">
+          <input name="need-slider" id="need-slider" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range">
+        </div> -->
+
+         <!-- reload button -->
+         <!-- <a href="#" class="ui-btn ui-shadow ui-icon-refresh ui-btn-icon-left" onClick="reload()">refresh</a> -->
+         
+    </div>
+    <div >
+        <div data-role="controlgroup" style="position:fixed; bottom:50px; width:70%;" data-type="vertical">
+          <button  onClick="reload('right')" class="ui-btn"> + </button>
+          <button  onClick="reload('left')" class="ui-btn"> - </button>
+        </div>
+
+    </div>
+
+
+  </div><!-- (end main)-->
+
+
+
+
+
+<!-- FOOTER -->
+    <div data-role="footer" data-position="fixed">
+    <a href="#myMenuPanel" class="ui-btn ui-corner-all ui-shadow">Menu</a>
+  </div>
+
+
+</div> <!-- end cards page -->
+
+
+
+<!-- ***********   DATA-PAGE **********************  -->
+<div data-role="page" id="data-page">
+
+  <div data-role="main" class="ui-content">
+
+    <h2>Your data :)</h2>
+ 
+    <p>Friends JSON:
+      <textarea id="friendJsonInput"></textarea>
+    </p>
+
+    <button onClick="saveDataJsonFromDataPage()" class="ui-btn">Save!</button>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end data-page -->
+
+
+
+<!-- ***********   FRIEND-LIST page **********************  -->
+<div data-role="page" id="friend-list-page" onload="fillFriendsList()">
+
+  <div data-role="main" class="ui-content">
+    <form class="ui-filterable">
+      <input id="myFriendsListFilter" data-type="search">
+    </form>
+
+    <ul data-role="listview" id="friendsListView" data-autodividers="true" data-inset="true" data-filter="true" data-input="#myFriendsListFilter">
+
+    </ul>
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end friends list page -->
+
+
+
+
+<!-- ***********   ADD FRIEND-PAGE **********************  -->
+<div data-role="page" id="addFriend-page">
+
+  <div data-role="main" class="ui-content">
+
+    <h2>Add Friend :)</h2>
+
+ 
+    <p>Friend name:
+    <input type="text" list="namesDataList" autocomplete="on" id="friendToAddName" placeholder="Friend name..."></p>
+    <datalist id="namesDataList">
+      <option value="pepefe">
+    </datalist>
+
+    <p>Intentions:
+    <textarea id="intentionsToAdd" placeholder="intentions..."></textarea></p>
+
+    <!-- <input name="need-slider" id="need-sliderToAdd" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range"> -->
+    <input type="submit" onClick="addFriend()" value="Add!">
+   
+    
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end data-page -->
+
+
+
+<!-- ***********   EDIT FRIEND-PAGE **********************  -->
+<div data-role="page" id="editFriend-page">
+
+  <div data-role="main" class="ui-content">
+
+    <h2>Edit Friend :)</h2>
+
+ 
+    <p>Friend name:
+    <input type="text" id="friendToEditName" placeholder="Friend name..."></p>
+    <p>Intentions:
+    <textarea id="intentionsToEdit" placeholder="intentions..."></textarea></p>
+
+    <!-- <input name="need-slider" id="need-sliderToAdd" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range"> -->
+    <button onClick="editFriend()" class="ui-btn">Save changes!</button>
+    <button onClick="removeFriend()" class="ui-btn">Remove friend</button>
+    
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end data-page -->
+
+
+
+<!-- ***********   DEVELOPER-PAGE **********************  -->
+<div data-role="page" id="developer-page">
+
+  <div data-role="main" class="ui-content">
+
+    <h2>Developer</h2>
+    <a href="#cloudStorage-page" class="ui-btn ui-corner-all">Cloud storage</a> 
+    <hr>
+    <a href="#" onClick="backup()" class="ui-btn ui-corner-all">do backup (test)</a>
+    <a href="#" onClick="restore()" class="ui-btn ui-corner-all">restore backup (test)</a>
+    <hr>
+    <a href="#data-page" class="ui-btn ui-corner-all">Edit raw JSON</a>
+    <a href="#" onClick="clearLocalStorage()" class="ui-btn ui-corner-all">Clear all local storage</a>
+
+ 
+
+    
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end developer-page -->
+
+
+
+<!-- ***********   BACKUP-PAGE **********************  -->
+<div data-role="page" id="cloudStorage-page">
+
+  <div data-role="main" class="ui-content">
+      <h2>Backup</h2>
+        <p>User:
+        <input type="text" name="user" id="userFormInput" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username..."></p>
+
+        <p>Password:
+        <input type="password" name="pass" id="passwordFormInput" placeholder="password..."></p>
+
+        <!-- radio buttons -->
+        <fieldset data-role="controlgroup" id="actionGroup">
+          <legend>Choose the action:</legend>
+
+            <label for="upload">Upload</label>
+            <input type="radio" name="action" id="upload" value="upload">
+
+            <label for="download">Download</label>
+            <input type="radio" name="action" id="download" value="download">
+
+            <label for="newuser">New user</label>
+            <input type="radio" name="action" id="newuser" value="newuser">
+
+          </fieldset>
+
+          <input type="button" onClick="requestCloudAction()" value="Go!">
+
+        <textarea id="friendJsonToBackup"></textarea>
+        <input type="button" onClick="restoreCloudBackup1()" value="restore it!">
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end backup-page -->
+
+
+<!-- ***********   BACKUP-PAGE [2] **********************  -->
+<div data-role="page" id="backup2-page">
+  <!-- HEADER -->
+  <div data-role="header" data-position="fixed">
+    <h1 id="userHeader">cloud</h1>
+    <a href="#userPanel" class="ui-btn ui-btn-right ui-icon-user ui-btn-icon-left ui-corner-all ui-shadow">me</a>
+  </div><!-- end header -->
+
+  <!-- panel -->
+  <div data-role="panel" id="userPanel" data-position="right" data-display="overlay"> 
+
+        <p>User
+        <input type="text" name="user" id="userFormInput2" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username..."></p>
+
+        <p>Password
+        <input type="password" name="pass" id="passwordFormInput2" placeholder="password..."></p>
+        <input type="button" onClick="login()" value="Log in!">
+        <input type="button" onClick="createUser()" value="Create an user">
+    
+
+  </div> <!-- end panel -->
+
+  <div data-role="main" class="ui-content">
+      <h2>Backup</h2>
+        <input type="button" onClick='backupOrRestore("backup")' value="Do backup">
+        <input type="button" onClick='backupOrRestore("restore")' value="Restore backup">
+
+        <!-- radio buttons -->
+        
+  </div>
+
+  <!-- FOOTER -->
+  <div data-role="footer" data-position="fixed">
+    <a href="#" class="ui-btn" data-rel="back">Back</a>
+  </div>
+
+</div> <!-- end backup-page [2]-->
+
+
+
+
+
+
+
+
+  <!-- backup script -->
+  <script>
+
+
+
+    function restoreCloudBackup1(){
+      localStorage.friendsJson = document.getElementById("friendJsonToBackup").value;
+      window.alert("Restored!");
+    }//end restoreCloudBackup
+
+
+    //--- for cloud storage page
+    function requestCloudAction() {
+      var myRadio = $('input[name=action]');
+
+      var action = myRadio.filter(':checked').val();
+      var user = document.getElementById("userFormInput").value;
+      var pass = document.getElementById("passwordFormInput").value;
+      var json = "null";
+
+      if (action=="upload"){// if we are going to upload, pass the json as parameter!
+        json = localStorage.friendsJson;
+      }
+
+      //save the data to make it easier for the user
+      localStorage.user = user;
+      document.getElementById("userHeader").innerHTML = user;
+      localStorage.pass = pass;
+
+  
+      var xmlhttp;
+      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+        }
+      else{// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+      xmlhttp.onreadystatechange=function(){
+
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+          if (action=="upload"){
+            window.alert("about to update your cloud json file (overriding)...");
+            document.getElementById("friendJsonToBackup").value = localStorage.friendsJson;
+
+            temp = JSON.parse(xmlhttp.responseText);
+
+            if (temp.Status){ //if we receive some status message...
+              window.alert(temp.Status);
+            }
+            //show a toast message...
+            if (temp.Status=="Success"){
+              toastr.success("Data saved on the cloud!", "Success");
+            }else{
+              toastr.error(temp.Status, "Error");
+            }
+            
+
+          }else if (action=="download"){
+            window.alert("downloading...");
+
+            temp = JSON.parse(xmlhttp.responseText);
+            if (temp.Status){ //if we receive some status message...
+              window.alert(temp.Status);
+              return; //finish this..
+            }
+
+            cloudJson = JSON.stringify(temp);
+            document.getElementById("friendJsonToBackup").value=JSON.stringify(temp, null, 2);
+
+            toastr.warning('Press "restore it" button to finsih restoring',"Almost there...");
+
+          }else if (action=="newuser"){
+            window.alert("about to create a new user ("+user+")...");
+            res = JSON.parse(xmlhttp.responseText);
+            
+              //window.alert(res.Status);
+
+              //show a toastr message...
+              if (res.Status=="Success"){
+                toastr.success("user "+user+" creted!", "Success");
+              }else{
+                toastr.error(res.Status, "Error");
+              }
+
+          }
+          
+        }
+      }
+
+      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      
+      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      
+    }// end requestCloudAction
+
+ 
+</script> <!-- end backup scripts -->
+
+
+ 
+
+
+
+<script>
+
+  function fillFriendsList(){ //ASGA
+
+    jsonString = localStorage.friendsJson;
+   
+ 
+    json = JSON.parse(jsonString);
+    //json = {"friends":[{"name":"Berni","intentions":["family","beca"],"need":0.9},{"name":"Fati","intentions":["notas"],"need":0.7},{"name":"Alex","intentions":["notas","gloria"],"need":0.5}]};
+   
+
+    array = json.friends;
+    //---generate the html for the content of the listView
+    listViewContentHtml = '';
+    for (i = 0; i < array.length; i++) { 
+      listViewContentHtml = listViewContentHtml+'<li ind="'+i+'"><a href="#friend-list-page">'+array[i].name+'<span class="ui-li-count">'+array[i].need+'</span></a></li>';
+     
+      
+    }
+
+    //---add the html
+   document.getElementById("friendsListView").innerHTML = listViewContentHtml;
+
+
+   $( "#friendsListView" ).listview( "refresh" ); //important!!
+
+    //ASGA list view listener 
+    $('#friendsListView').children('li').on('click', function () {
+       //alert('index=' + $(this).attr('ind'));
+       index=$(this).attr('ind'); //(put that attribute within the <li> tag, and you are done! :)
+       window.location = "#editFriend-page";
+
+    });
+      
+  }//ASGA
+
+</script>  <!-- end friends list scripts -->
+
+
+
+
+<!-- ***********   more SCRIPTS **********************  -->
+  <script type="text/javascript">
+    var index; 
+
+    function reload( side ){
+
+
+        if (window.localStorage.friendsJson){
+          var mJson = JSON.parse(window.localStorage.friendsJson);
+        }else{
+          //window.alert("No data! :(");
+          return;
+        }
+
+        if (mJson.friends.length==0){//ASGA: not necessary to keep going...
+          //window.alert("No friends! :(");
+          return;
+        }
+
+        
+
+        // MAE --
+        // Add reduce need according swipe left or right
+        if (index !== undefined && index !== null) { //ASGA: && null 
+          
+        	var need = mJson.friends[index].need*10;
+        	if (side=="right") {
+        		need = need<9? need+1 : 10;
+        	}else if (side=="left") {
+        		need = need>3? need-1 : 2;
+        	};
+        	mJson.friends[index].need = need/10;
+        	var s = JSON.stringify(mJson);
+          window.localStorage.friendsJson = s;
+        };
+        //random number (or get index)
+        //index = Math.floor((Math.random() * Object.keys(mJson.friends).length));
+
+
+        
+        index = getRandomFriend();
+
+
+        refreshCardsView();
+
+        //ASGA: the refreshCardsView() method does this. :)
+        // -- MAE
+        /*
+        //friend name
+        document.getElementById("friendName").innerHTML = mJson.friends[index].name;
+
+        //intentions
+        var intentionsArray = mJson.friends[index].intentions;
+        var intentionsString = "";
+        for (var i = 0; i < intentionsArray.length ; i++) {
+
+          intentionsString = intentionsString + "</p><p>"+ intentionsArray[i];
+        }
+        document.getElementById("intention").innerHTML = intentionsString;
+
+*/
+        //update need slider
+        //$("#need-slider").val(mJson.friends[index].need * 10).slider("refresh");
+
+
+    }//--- reload function
+ 
+ 
+
+    //-------- INPUT JSON ------
+    
+    
+
+    function init() {//initialize the local storage...
+
+
+        if (!window.localStorage.friendsJson){ //if there isn't data on the friends local storage:
+          window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
+        }
+
+//toast-bottom-center //toast-top-right
+        toastr.options = {
+          "closeButton": false,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": false,
+          "positionClass": "toast-bottom-center",
+          "preventDuplicates": true,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "2700",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        }
+
+
+        
+
+  
+
+    }//--- init function
+
+ 
+
+    function saveDataJsonFromDataPage() {
+
+        window.localStorage.friendsJson = document.getElementById("friendJsonInput").value;
+
+        console.log(localStorage.friendsJson);
+
+        toastr.success("Saved!");
+       //window.alert("saved!");
+
+    }//--- saveDataJson function
+
+
+    function clearLocalStorage(){
+      window.localStorage.clear();
+      init(); //re initialize
+      //window.alert("all our local storage cleared!");
+      toastr.success("all our local storage cleared!");
+    }
+
+    function removeFriend(){
+      window.alert("about to remove...");
+      if (index !== undefined && index !== null ) {
+
+        var mJson = JSON.parse(window.localStorage.friendsJson); //get my global (total) data json
+        var tempName = mJson.friends[index].name;
+
+
+        mJson.friends.splice(index, 1);
+       
+
+        temp = JSON.stringify(mJson);
+        window.localStorage.friendsJson = temp;
+
+       // window.alert(temp);
+
+        //window.alert(tempName + " removed!");
+
+        index = getRandomFriend(); //get an new index (the previous one might not exit anymore)
+
+        refreshCardsView();
+
+        toastr.success(tempName + " deleted!");
+
+        window.location = "#"; //
+
+      }else{
+        window.alert("something was wrong... index="+index);
+      }
+    }
+
+
+    function editFriend ( ) {
+
+      
+      
+      var mJson = JSON.parse(localStorage.friendsJson); //get my global (total) data json
+      friendName = document.getElementById("friendToEditName").value;
+      friendIntentions = document.getElementById("intentionsToEdit").value;
+      friendNeed = mJson.friends[index].need;
+
+      var name = '"name":"'+friendName+'"';
+
+      //replace wnrwe, creating array...
+      var intentions = '"intentions":["'+friendIntentions.replace(/\n ?/g, '","')+'"]';
+      var need = '"need":'+friendNeed;
+
+      //final friend in json format
+      var newFriendJsonString = '{'+name+', '+intentions+',' +need+'}';
+
+     
+      var newFriendJson = JSON.parse(newFriendJsonString); //convert to a real json
+
+      //--add this friend to the TOTAL...
+      mJson.friends[index] = newFriendJson; //replace friend data
+
+      //sort it by name! ;)
+      mJson.friends.sort( predicatBy("name") );
+
+
+
+      //function to sort an array of jsons, by attribute within them!!
+      // source: stackoverflow.com/questions/11099610/generic-way-of-sorting-json-array-by-attribute
+      // adding the upperCase to improve it (before it ordered wrong)
+      function predicatBy(prop){
+       return function(a,b){
+          if( a[prop].toUpperCase() > b[prop].toUpperCase()){
+              return 1;
+          }else if( a[prop].toUpperCase() < b[prop].toUpperCase() ){
+              return -1;
+          }
+          return 0;
+        }  
+      }
+
+      
+      temp = JSON.stringify(mJson);
+      localStorage.friendsJson = temp;
+
+
+      refreshCardsView();
+
+      toastr.success("Your item has been updated", "Edited!");
+
+      //window.alert("edited!");
+      window.location = "#";
+
+    }
+
+
+    function addFriend( ){ 
+
+      friendName = document.getElementById("friendToAddName").value;
+
+      if (friendName==""){
+        toastr.error('You have to give a name', 'Error');
+        
+        return;
+      }
+
+      friendIntentions = document.getElementById("intentionsToAdd").value;
+      friendNeed = 1; //document.getElementById("need-sliderToAdd").value / 10;
+
+      var name = '"name":"'+friendName+'"';
+
+      //replace wnrwe, creating array...
+      var intentions = '"intentions":["'+friendIntentions.replace(/\n ?/g, '","')+'"]';
+      var need = '"need":'+friendNeed;
+
+      //final friend in json format
+      var newFriendJsonString = '{'+name+', '+intentions+',' +need+'}';
+
+     
+      var newFriendJson = JSON.parse(newFriendJsonString); //convert to a real json
+
+      //--add this friend to the TOTAL...
+      var mJson = JSON.parse(localStorage.friendsJson); //get my global (total) data json
+
+      mJson.friends.push(newFriendJson); //add the new friend within the total json       
+
+
+      //sort it by name! ;)
+      mJson.friends.sort( predicatBy("name") );
+
+
+
+      //function to sort an array of jsons, by attribute within them!!
+      // source: stackoverflow.com/questions/11099610/generic-way-of-sorting-json-array-by-attribute
+      // adding the upperCase to improve it (before it ordered wrong)
+      function predicatBy(prop){
+       return function(a,b){
+          if( a[prop].toUpperCase() > b[prop].toUpperCase()){
+              return 1;
+          }else if( a[prop].toUpperCase() < b[prop].toUpperCase() ){
+              return -1;
+          }
+          return 0;
+        }  
+      }
+
+      
+      temp = JSON.stringify(mJson);
+
+      
+      localStorage.friendsJson = temp;
+
+      document.getElementById("friendToAddName").value = "";
+      document.getElementById("intentionsToAdd").value = "";
+      //$("#need-sliderToAdd").val(5).slider("refresh");
+
+      refreshCardsView();
+
+     // window.alert("added!");
+      
+      
+      toastr.success('name: '+friendName, 'Added');
+     
+
+    }//end add friend
+
+    //update / refresh the main page...
+    function refreshCardsView(){
+    
+      //MAE
+      if (index !== undefined && index !== null ) { //ASGA: "null" also!! (especially with new users, they don't have index yet)
+        var mJson = JSON.parse(localStorage.friendsJson);
+
+
+        
+        // Reload values
+        document.getElementById("friendName").innerHTML = mJson.friends[index].name;
+
+        //intentions
+        var intentionsArray = mJson.friends[index].intentions;
+        var intentionsString = "";
+        for (var i = 0; i < intentionsArray.length ; i++) {
+
+          intentionsString = intentionsString + "</p><p>"+ intentionsArray[i];
+        }
+        document.getElementById("intention").innerHTML = intentionsString;  
+      //MAE
+
+    }else{  //ASGA
+      document.getElementById("friendName").innerHTML = "You have no friends! :(";
+      document.getElementById("intention").innerHTML = "There is a lot of people out there to pray for! Let's add them!";
+    }
+
+  }
+
+
+
+
+    // MAE --
+    function getRandomFriend ( ) {
+      
+
+    // Get data
+    	var mJson = JSON.parse(window.localStorage.friendsJson);
+    	var friends = mJson.friends;
+
+    // Compute the total need
+        var sum = 0;
+        for (var i = friends.length - 1; i >= 0; i--) {
+            sum += friends[i].need;
+        };
+    // Get random number below total need, and select the right friend
+        var choice = Math.random()*sum;
+        var soFar = 0;
+        for (var i = friends.length - 1; i >= 0; i--) {
+            soFar += friends[i].need;
+            if ( choice < soFar ) {
+            	return i;
+            }
+        };
+        return null;
+    }
+    // -- MAE
+
+  </script>
+
+
+    <script>
+
+      $("div").on("swipeleft",function(){   
+        reload( "left" ); // MAE
+      });   
+    
+      $("div").on("swiperight",function(){
+        reload( "right" ); // MAE
+      });   
+
+      $("#myCard").on("taphold",function(){ //#myCard #friendName
+        //$(this).hide();
+        window.location = "#editFriend-page";
+      });                    
+
+  </script>
+
+
+  <!-- pages events.. -->
+  <script> 
+
+    //cards-page (MAIN)...
+    var index;
+    $( document ).delegate("#cards-page", "pagebeforeshow", function() {
+
+      if (index !== undefined && index !== null ) {//if we got here with an index, keep it
+        //window.alert("1");
+        refreshCardsView();
+
+      }else{//if not, get a new one
+  
+        reload("");
+      }
+
+      
+    });
+
+
+
+
+    //friend list page...
+    $( document ).delegate("#friend-list-page", "pagebeforeshow", function() {
+      //alert('reloading friends listview! :)');
+      fillFriendsList(); //reload/fill the listView
+    });
+
+
+    //add friend page..
+    $( document ).delegate("#addFriend-page", "pagebeforeshow", function() {
+       
+        // create the input datalist for the names :)
+        if (window.localStorage.friendsJson){
+          mJson2 = JSON.parse(window.localStorage.friendsJson);
+
+          var optionsHtml = "";
+          for (var i = 0; i < mJson2.friends.length; i++) {
+            optionsHtml = optionsHtml + '<option value="'+mJson2.friends[i].name+'">';
+          };
+
+          document.getElementById("namesDataList").innerHTML = optionsHtml;
+        }//-- end create name suggestions
+
+        
+    });
+
+
+    //edit friend page...
+    $( document ).delegate("#editFriend-page", "pagebeforeshow", function() {
+        // alert('addFriend-page about to be showed!');
+
+        //check / get   json...
+        if (window.localStorage.friendsJson){
+          var mJson = JSON.parse(window.localStorage.friendsJson); //ASG: ("window".localStorage...)
+
+        }else{
+          window.alert("no friends!");
+          window.location = "#";
+          return;
+        }
+        
+        
+        //friend name
+        if ( index === undefined || index==null) {
+          window.alert("no friend selected!");
+          window.location = "#";
+          return;
+        };
+        document.getElementById("friendToEditName").value = mJson.friends[index].name;
+
+        //intentions
+        var intentionsArray = mJson.friends[index].intentions;
+        var intentionsString = "";
+        for (var i = 0; i < intentionsArray.length ; i++) {
+
+          intentionsString = intentionsString + intentionsArray[i] + "\n";
+        }
+        document.getElementById("intentionsToEdit").value = intentionsString;
+        
+    });
+
+    
+    //before show cloudStorage-page
+    $( document ).delegate("#cloudStorage-page", "pagebeforeshow", function() {
+      if (localStorage.user){
+       document.getElementById("userFormInput").value = localStorage.user;
+       document.getElementById("passwordFormInput").value = localStorage.pass;
+      }
+      
+    });
+
+
+    //before show backup2-page
+    $( document ).delegate("#backup2-page", "pagebeforeshow", function() {
+      if (localStorage.user){
+       document.getElementById("userFormInput2").value = localStorage.user;
+       document.getElementById("passwordFormInput2").value = localStorage.pass;
+       document.getElementById("userHeader").innerHTML = localStorage.user;
+      }
+      
+    });
+
+    //data-page beforeshow (ASGA)
+    $( document ).delegate("#data-page", "pagebeforeshow", function() {
+
+      if (window.localStorage){//if we have local storage...
+
+        jsonn = JSON.parse(window.localStorage.friendsJson);
+
+        str = JSON.stringify(jsonn, null, 2);
+        document.getElementById("friendJsonInput").value = str;
+        window.alert(str);
+
+      }else{
+      //show a json example on the textarea!!
+        document.getElementById("friendJsonInput").value = '{"friends":[{"name":"alex", "intentions":["intention1","intention2"], "need":0.7}, {"name":"jarri", "intentions":["intention1","intention2"], "need":0.8}]}';
+        init();
+      }
+      
+      
+    });//--end
+
+
+    //slider listener... (it requires the slider to be within a div)
+    $('#div-slider').on('slidestop', "#need-slider", function(event){  
+        
+        // alert("stop: "+$(this).val()+" "+index);
+        tempJsonn = JSON.parse(localStorage.friendsJson);
+        mval = $(this).val() / 10 ;
+    
+
+        tempJsonn.friends[index].need = mval;
+        var s = JSON.stringify(tempJsonn);
+     
+
+        window.localStorage.friendsJson = s;
+    });
+
+
+
+
+
+
+    function getUrlParameter(sParam)
+    {
+        var sPageURL = window.location.search.substring(1);
+        var sURLVariables = sPageURL.split('&');
+        for (var i = 0; i < sURLVariables.length; i++) 
+        {
+            var sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] == sParam) 
+            {
+                return sParameterName[1];
+            }
+        }
+    } 
+
+
+  </script>
+
+
+
+  <!--backup / restore  methods -->
+  <script> 
+
+    function backup(){
+      backupOrRestore("backup");
+    }
+
+    function restore(){
+      backupOrRestore("restore");
+    }
+
+
+
+    function backupOrRestore(ToDO) {
+      //window.alert("doing "+ToDO);
+
+      var action = "null";
+
+        if(ToDO=="backup"){
+          action = "upload";
+          if (confirm("You are about to update your cloud data (overriding the previous one).\nContinue?") == true) {
+               // x = "You pressed OK!";
+          } else {
+               // x = "You pressed Cancel!";
+               toastr.error("ok, backup canceled!","Canceled");
+               return;
+          }
+
+        }else if(ToDO=="restore"){
+          action = "download";
+          if (confirm("RESTORE will replace your current local data with your data from the cloud.\nContinue?") == true) {
+               // x = "You pressed OK!";
+          } else {
+               // x = "You pressed Cancel!";
+               toastr.error("ok, restored canceled!","Canceled");
+               return;
+          }
+
+        }
+
+      //if (window.localStorage.user==null || window.localStorage.pass==null ){
+      if (localStorage.logged!="true"){
+        toastr.error("you are not logged in", "Error");
+        $("#userPanel").panel("open");
+        return;
+      }
+
+      var user = window.localStorage.user;
+      var pass = window.localStorage.pass;
+      var json = "null";
+
+      if (action=="upload"){// if we are going to upload, pass the json as parameter!
+        json = window.localStorage.friendsJson;
+      }
+
+
+      var xmlhttp;
+      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+        }
+      else{// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+      xmlhttp.onreadystatechange=function(){
+
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+          //--case upload
+          if (action=="upload"){
+            //window.alert("You are about to update your cloud data\n(This will OVERRIDE the previous cloud data)");
+
+            temp = JSON.parse(xmlhttp.responseText);
+
+            if (temp.Status){ //if we receive some status message...
+
+              //show a toast message...
+              if (temp.Status=="Success"){
+                toastr.success("Your data is now on the cloud. Safe and private :)", "Success");
+              }else{
+                toastr.error(temp.Status, "Error :(");
+              }
+            }//end if ()
+
+
+          //--case download
+          }else if (action=="download"){
+            //window.alert("You are about to RESTORE all your local data.\n(This will replace your current local data with the data on the cloud)");
+
+            temp = JSON.parse(xmlhttp.responseText);
+
+            if (temp.Status){ //if we receive some status message...
+              //window.alert(temp.Status);
+              toastr.error(temp.Status, "Error :(");
+
+              return; //finish this.., BECAUSE we shouldn't receive a status message if we receive the data-json.
+            }
+
+            cloudJson = JSON.stringify(temp);
+            window.localStorage.friendsJson=cloudJson;//remove the extra break lines...
+            toastr.success("Your data has been resotored! :)", "Success");
+            //window.alert("success");
+
+          //--case default
+          }else {
+            window.alert("unkown action");
+
+          }
+          
+        }
+      }
+
+      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      
+      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      
+    }//end backupOrRestore(ToDO)
+
+
+    function logout(){
+      updateUserDataCrossTheApp("","");
+
+    }
+
+    function updateUserDataCrossTheApp(user, password){
+      localStorage.user = user;
+      localStorage.pass = password;
+      document.getElementById("userFormInput2").value = user;
+      document.getElementById("passwordFormInput2").value = password;
+      document.getElementById("userHeader").innerHTML = user;
+
+    }
+
+    
+    function login(){
+      var action = "download";
+      var json = "null";
+
+      var user = document.getElementById("userFormInput2").value;
+      var pass = document.getElementById("passwordFormInput2").value;
+      
+
+
+      //save the data to make it easier for the user
+      /*localStorage.user = user;
+      localStorage.pass = pass;
+      document.getElementById("userHeader").innerHTML = user;*/
+
+      
+
+
+      
+
+  
+      var xmlhttp;
+      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+        }
+      else{// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+      xmlhttp.onreadystatechange=function(){
+
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+          temp = JSON.parse(xmlhttp.responseText);
+
+          //show a toast message...
+            if (temp.Status=="Success" || temp.friends){
+              $("#userPanel").panel("close");
+              toastr.success("you are in ;)", "Success");
+              window.localStorage.logged = "true";
+              updateUserDataCrossTheApp(user, pass);
+
+            }else{
+              toastr.error(temp.Status, "Error");
+              updateUserDataCrossTheApp("","");
+              window.localStorage.logged = "false";
+            }
+
+    
+        }
+      }
+
+      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      
+      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      
+    }// end login
+
+
+
+    function createUser(){
+   
+      var action = "newuser";
+      var user = document.getElementById("userFormInput2").value;
+      var pass = document.getElementById("passwordFormInput2").value;
+      var json = "null";
+
+
+      //save the data to make it easier for the user
+      localStorage.user = user;
+      document.getElementById("userHeader").innerHTML = user;
+      localStorage.pass = pass;
+
+  
+      var xmlhttp;
+      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+        }
+      else{// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+      xmlhttp.onreadystatechange=function(){
+
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+          temp = JSON.parse(xmlhttp.responseText);
+
+          //show a toast message...
+            if (temp.Status=="Success"){
+              toastr.success("User "+user+" created!", "Success");
+            }else{
+              toastr.error(temp.Status, "Error");
+              document.getElementById("userFormInput2").value = "";
+              document.getElementById("passwordFormInput2").value = "";
+              localStorage.user = null;
+              document.getElementById("userHeader").innerHTML = "cloud";
+              localStorage.pass = null;
+            }
+
+    
+        }
+      }
+
+      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      
+      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      
+    }// end create user
+
+
+  </script>
+
+</body>
+</html>
