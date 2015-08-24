@@ -2,6 +2,7 @@
 <html lang="en" manifest="friends.appcache">
 
    <title>friends</title>
+   <meta charset="utf-8" />
 
    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <!-- make it ios web app -->
@@ -31,84 +32,61 @@
 
 <!-- ***********   CARDS-PAGE **********************  -->
 <div data-role="page" id="cards-page">
-  <!-- HEADER -->
-  <!--<div data-role="header"  data-position="fixed">
-    <h1>Friends tool</h1>
-  </div> -->
 
-  <!-- panel -->
+<!-- panel Menu-->
   <div data-role="panel" id="myMenuPanel"> 
     <h2>Menu</h2>
-    <p>Let's add here settings and those things.</p>
-    <a href="#editFriend-page" class="ui-btn ui-corner-all ui-icon-edit ui-btn-icon-left">Edit current friend</a>
+    <p>What can we do for you?</p>
+    <!--<a href="#editFriend-page" class="ui-btn ui-corner-all ui-icon-edit ui-btn-icon-left">Edit current friend</a>-->
     <a href="#friend-list-page" class="ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left">View friends list</a>
     <a href="#addFriend-page" class="ui-btn ui-corner-all ui-icon-plus ui-btn-icon-left">Add friend</a>
-     
     <a href="#backup2-page" class="ui-btn ui-corner-all ui-icon-cloud ui-btn-icon-left">Backup</a>  
-    
     <hr>
     <a href="#developer-page" class="ui-btn ui-corner-all ui-icon-gear ui-btn-icon-left">Developer</a>
-    
+  </div>
+<!-- end panel Menu-->
 
-  </div> <!-- end panel -->
-
-  <!-- MAIN -->
+<!-- Speak with God about my firends -->
   <div data-role="main" class="ui-content">
 
     <div id="myCard" class="ui-content">      
-        <h1 id="friendName">Friend name!</h1>
-        <hr>
-        <p style="margin-left:10px;" id="intention">Intentions should go here...</p>
+        <h1 class="editable" id="friendName">Friend name!</h1><hr>
 
-<!--        <hr>
-
-         <label for="need-slider">Need:</label>
-        <div id="div-slider">
-          <input name="need-slider" id="need-slider" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range">
-        </div> -->
-
-         <!-- reload button -->
-         <!-- <a href="#" class="ui-btn ui-shadow ui-icon-refresh ui-btn-icon-left" onClick="reload()">refresh</a> -->
-         
-    </div>
-    <div >
-        <div data-role="controlgroup" style="position:fixed; bottom:50px; width:70%;" data-type="vertical">
-          <button  onClick="reload('right')" class="ui-btn"> + </button>
-          <button  onClick="reload('left')" class="ui-btn"> - </button>
-        </div>
-
+        <p>
+          <b>Padre, ¿qué tiene en el corazón?</b><br>
+          <span class="editable" style="margin-left:10px;" id="t_friend_heart">...</span>
+        </p>
+        <p>
+          <b>Dios mío, ¿qué quiere? ¿qué necesita?</b><br>
+          <span class="editable" style="margin-left:10px;" id="t_friend_will">...</span>
+        </p>
+        <p>
+          <b>Señor, ¿yo cómo le puedo ayudar?</b><br>
+          <span class="editable" style="margin-left:10px;" id="t_friend_help">...</span>
+        </p>         
     </div>
 
-
-  </div><!-- (end main)-->
-
-
-
-
+  </div>
+<!-- (end main)-->
 
 <!-- FOOTER -->
-    <div data-role="footer" data-position="fixed">
+  <div data-role="footer" data-position="fixed">
     <a href="#myMenuPanel" class="ui-btn ui-corner-all ui-shadow">Menu</a>
   </div>
-
+<!-- END FOOTER -->
 
 </div> <!-- end cards page -->
-
 
 
 <!-- ***********   DATA-PAGE **********************  -->
 <div data-role="page" id="data-page">
 
   <div data-role="main" class="ui-content">
-
     <h2>Your data :)</h2>
- 
     <p>Friends JSON:
       <textarea id="friendJsonInput"></textarea>
     </p>
-
     <button onClick="saveDataJsonFromDataPage()" class="ui-btn">Save!</button>
-
   </div>
 
   <!-- FOOTER -->
@@ -116,7 +94,7 @@
     <a href="#" class="ui-btn" data-rel="back">Back</a>
   </div>
 
-</div> <!-- end data-page -->
+</div>
 
 
 
@@ -127,10 +105,7 @@
     <form class="ui-filterable">
       <input id="myFriendsListFilter" data-type="search">
     </form>
-
-    <ul data-role="listview" id="friendsListView" data-autodividers="true" data-inset="true" data-filter="true" data-input="#myFriendsListFilter">
-
-    </ul>
+    <ul data-role="listview" id="friendsListView" data-autodividers="true" data-inset="true" data-filter="true" data-input="#myFriendsListFilter"></ul>
   </div>
 
   <!-- FOOTER -->
@@ -160,7 +135,6 @@
     <p>Intentions:
     <textarea id="intentionsToAdd" placeholder="intentions..."></textarea></p>
 
-    <!-- <input name="need-slider" id="need-sliderToAdd" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range"> -->
     <input type="submit" onClick="addFriend()" value="Add!">
    
     
@@ -207,7 +181,6 @@
 <div data-role="page" id="developer-page">
 
   <div data-role="main" class="ui-content">
-
     <h2>Developer</h2>
     <a href="#cloudStorage-page" class="ui-btn ui-corner-all">Cloud storage</a> 
     <hr>
@@ -215,11 +188,7 @@
     <a href="#" onClick="restore()" class="ui-btn ui-corner-all">restore backup (test)</a>
     <hr>
     <a href="#data-page" class="ui-btn ui-corner-all">Edit raw JSON</a>
-    <a href="#" onClick="clearLocalStorage()" class="ui-btn ui-corner-all">Clear all local storage</a>
-
- 
-
-    
+    <a href="#" onClick="clearLocalStorage()" class="ui-btn ui-corner-all">Clear all local storage</a>    
   </div>
 
   <!-- FOOTER -->
@@ -227,7 +196,8 @@
     <a href="#" class="ui-btn" data-rel="back">Back</a>
   </div>
 
-</div> <!-- end developer-page -->
+</div>
+<!-- end developer-page -->
 
 
 
@@ -311,9 +281,39 @@
 
 
 
+<!-- Make elements editable -->
 
+<script type="text/javascript">
 
+  function make_editable ( id ) {
+    var t  = '#'+id
+    var ta = '#ta_'+id
+    $( t ).after(function() {
+      var textarea='<textarea id="ta_'+id+'" rows="2" style="display: none;"></textarea>'
+      return textarea;
+    });
 
+    $( t ).click( function(){
+      $(ta).val( $(t).text() )
+      $(t ).hide()
+      $(ta).show()
+    });
+
+    $(ta).keyup(function(e){
+      if((e.keyCode || e.which) != 13) return;
+      $(t ).text( $(ta).val() )
+      $(ta).hide()
+      $(t ).show()
+    });
+  }
+
+  var items = document.getElementsByClassName('editable'), i;
+  for (var i = 0; i < items.length; i ++) {
+    make_editable( items[i].id )
+  }
+  
+
+</script>
 
 
   <!-- backup script -->
