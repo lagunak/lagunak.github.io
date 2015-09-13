@@ -36,10 +36,10 @@
 <!-- panel Menu-->
   <div data-role="panel" id="myMenuPanel"> 
     <h2>Menu</h2>
-    <p>What can we do for you?</p>
     <!--<a href="#editFriend-page" class="ui-btn ui-corner-all ui-icon-edit ui-btn-icon-left">Edit current friend</a>-->
     <a href="#friend-list-page" class="ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left">View friends list</a>
     <a href="#" onclick="addFriend();" class="ui-btn ui-corner-all ui-icon-plus ui-btn-icon-left">Add friend</a>
+    <a href="#" onclick="removeFriend();" class="ui-btn ui-corner-all ui-icon-plus ui-btn-icon-left">Remove friend</a>
     <a href="#backup2-page" class="ui-btn ui-corner-all ui-icon-cloud ui-btn-icon-left">Backup</a>  
     <hr>
     <a href="#developer-page" class="ui-btn ui-corner-all ui-icon-gear ui-btn-icon-left">Developer</a>
@@ -53,15 +53,15 @@
         <h1 class="editable" id="friendName">Friend name!</h1><hr>
 
         <p>
-          <b>Padre, ¿qué tiene en el corazón?</b><br>
+          <b><span id="l_friend_heart">Padre, ¿qué tiene en el corazón?</span></b><br>
           <span class="editable" style="margin-left:10px;" id="t_friend_heart">...</span>
         </p>
         <p>
-          <b>Dios mío, ¿qué quiere? ¿qué necesita?</b><br>
+          <b><span id="l_friend_will">Dios mío, ¿qué quiere? ¿qué necesita?</span></b><br>
           <span class="editable" style="margin-left:10px;" id="t_friend_will">...</span>
         </p>
         <p>
-          <b>Señor, ¿yo cómo le puedo ayudar?</b><br>
+          <b><span id="l_friend_help">Señor, ¿yo cómo le puedo ayudar?</span></b><br>
           <span class="editable" style="margin-left:10px;" id="t_friend_help">...</span>
         </p>         
     </div>
@@ -267,8 +267,7 @@
       $(ta).show()
     });
 
-    $(ta).keyup(function(e){
-      if((e.keyCode || e.which) != 13) return;
+    $(ta).mouseleave(function(){
       $(t ).text( $(ta).val() )
       $(ta).hide()
       $(t ).show()
@@ -383,35 +382,20 @@
     }// end requestCloudAction
 
  
-</script> <!-- end backup scripts -->
-
-
- 
-
-
-
-<script>
 
   function fillFriendsList(){ //ASGA
 
-    jsonString = localStorage.friendsJson;
-   
- 
-    json = JSON.parse(jsonString);
+    data = getData();
     //json = {"friends":[{"name":"Berni","intentions":["family","beca"],"need":0.9},{"name":"Fati","intentions":["notas"],"need":0.7},{"name":"Alex","intentions":["notas","gloria"],"need":0.5}]};
-   
-
-    array = json.friends;
+    array = data.friends;
     //---generate the html for the content of the listView
     listViewContentHtml = '';
     for (i = 0; i < array.length; i++) { 
       listViewContentHtml = listViewContentHtml+'<li ind="'+i+'"><a href="#friend-list-page">'+array[i].name+'<span class="ui-li-count">'+array[i].need+'</span></a></li>';
-     
-      
     }
 
     //---add the html
-   document.getElementById("friendsListView").innerHTML = listViewContentHtml;
+    document.getElementById("friendsListView").innerHTML = listViewContentHtml;
 
 
    $( "#friendsListView" ).listview( "refresh" ); //important!!
@@ -426,227 +410,83 @@
       
   }//ASGA
 
-</script>  <!-- end friends list scripts -->
+  var index;
 
+  function showNewFriend( side ){
+    updateNeed( side )
+    index = getRandomFriend();
+    showFriend()
+  }
 
-
-
-<!-- ***********   more SCRIPTS **********************  -->
-  <script type="text/javascript">
-    var index; 
-
-    function reload( side ){
-
-
-        if (window.localStorage.friendsJson){
-          var mJson = JSON.parse(window.localStorage.friendsJson);
-        }else{
-          //window.alert("No data! :(");
-          return;
-        }
-
-        if (mJson.friends.length==0){//ASGA: not necessary to keep going...
-          //window.alert("No friends! :(");
-          return;
-        }
-
-        
-
-        // MAE --
-        // Add reduce need according swipe left or right
-        if (index !== undefined && index !== null) { //ASGA: && null 
-          
-        	var need = mJson.friends[index].need*10;
-        	if (side=="right") {
-        		need = need<9? need+1 : 10;
-        	}else if (side=="left") {
-        		need = need>3? need-1 : 2;
-        	};
-        	mJson.friends[index].need = need/10;
-        	var s = JSON.stringify(mJson);
-          window.localStorage.friendsJson = s;
-        };
-        //random number (or get index)
-        //index = Math.floor((Math.random() * Object.keys(mJson.friends).length));
-
-
-        
-        index = getRandomFriend();
-
-
-        refreshCardsView();
-
-        //ASGA: the refreshCardsView() method does this. :)
-        // -- MAE
-        /*
-        //friend name
-        document.getElementById("friendName").innerHTML = mJson.friends[index].name;
-
-        //intentions
-        var intentionsArray = mJson.friends[index].intentions;
-        var intentionsString = "";
-        for (var i = 0; i < intentionsArray.length ; i++) {
-
-          intentionsString = intentionsString + "</p><p>"+ intentionsArray[i];
-        }
-        document.getElementById("intention").innerHTML = intentionsString;
-
-*/
-        //update need slider
-        //$("#need-slider").val(mJson.friends[index].need * 10).slider("refresh");
-
-
-    }//--- reload function
+  function updateNeed ( side ) {
+    var data = getData();
+    if ( !isNumber( index ) ) return
+    var need = mJson.friends[index].need*10;
+    if (side=="right") {
+      need = need<9? need+1 : 10;
+    } else if (side=="left") {
+      need = need>3? need-1 : 2;
+    };
+    mJson.friends[index].need = need/10;
+    saveData( mJson )
+  }
  
- 
+   
+  function isNumber ( s ) {
+    return (s !== undefined && s !== null)
+  }
 
-    //-------- INPUT JSON ------
-    
-    
-
-    function init() {//initialize the local storage...
-
-
-        if (!window.localStorage.friendsJson){ //if there isn't data on the friends local storage:
-          window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
-        }
+  function init() {//initialize the local storage...
+    if (!window.localStorage.friendsJson){ //if there isn't data on the friends local storage:
+      window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
+    }
 
 //toast-bottom-center //toast-top-right
-        toastr.options = {
-          "closeButton": false,
-          "debug": false,
-          "newestOnTop": false,
-          "progressBar": false,
-          "positionClass": "toast-bottom-center",
-          "preventDuplicates": true,
-          "onclick": null,
-          "showDuration": "300",
-          "hideDuration": "1000",
-          "timeOut": "2700",
-          "extendedTimeOut": "1000",
-          "showEasing": "swing",
-          "hideEasing": "linear",
-          "showMethod": "fadeIn",
-          "hideMethod": "fadeOut"
-        }
-
-
-        
-
-  
-
-    }//--- init function
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": false,
+      "positionClass": "toast-bottom-center",
+      "preventDuplicates": true,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "2700",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+  }
 
  
 
-    function saveDataJsonFromDataPage() {
-
-        window.localStorage.friendsJson = document.getElementById("friendJsonInput").value;
-
-        console.log(localStorage.friendsJson);
-
-        toastr.success("Saved!");
-       //window.alert("saved!");
-
-    }//--- saveDataJson function
+  function saveDataJsonFromDataPage() {
+    var json = document.getElementById("friendJsonInput").value
+    saveData( json );
+    console.log(localStorage.friendsJson);
+    toastr.success("Saved!");
+  }
 
 
-    function clearLocalStorage(){
-      window.localStorage.clear();
-      init(); //re initialize
-      //window.alert("all our local storage cleared!");
-      toastr.success("all our local storage cleared!");
-    }
-
-    function removeFriend(){
-      window.alert("about to remove...");
-      if (index !== undefined && index !== null ) {
-
-        var mJson = JSON.parse(window.localStorage.friendsJson); //get my global (total) data json
-        var tempName = mJson.friends[index].name;
+  function clearLocalStorage(){
+    window.localStorage.clear();
+    init();
+    toastr.success("all our local storage cleared!");
+  }
 
 
-        mJson.friends.splice(index, 1);
-       
-
-        temp = JSON.stringify(mJson);
-        window.localStorage.friendsJson = temp;
-
-       // window.alert(temp);
-
-        //window.alert(tempName + " removed!");
-
-        index = getRandomFriend(); //get an new index (the previous one might not exit anymore)
-
-        refreshCardsView();
-
-        toastr.success(tempName + " deleted!");
-
-        window.location = "#"; //
-
-      }else{
-        window.alert("something was wrong... index="+index);
-      }
-    }
-
-
-    function editFriend ( ) {
-
-      
-      
-      var mJson = JSON.parse(localStorage.friendsJson); //get my global (total) data json
-      friendName = document.getElementById("friendToEditName").value;
-      friendIntentions = document.getElementById("intentionsToEdit").value;
-      friendNeed = mJson.friends[index].need;
-
-      var name = '"name":"'+friendName+'"';
-
-      //replace wnrwe, creating array...
-      var intentions = '"intentions":["'+friendIntentions.replace(/\n ?/g, '","')+'"]';
-      var need = '"need":'+friendNeed;
-
-      //final friend in json format
-      var newFriendJsonString = '{'+name+', '+intentions+',' +need+'}';
-
-     
-      var newFriendJson = JSON.parse(newFriendJsonString); //convert to a real json
-
-      //--add this friend to the TOTAL...
-      mJson.friends[index] = newFriendJson; //replace friend data
-
-      //sort it by name! ;)
-      mJson.friends.sort( predicatBy("name") );
-
-
-
-      //function to sort an array of jsons, by attribute within them!!
-      // source: stackoverflow.com/questions/11099610/generic-way-of-sorting-json-array-by-attribute
-      // adding the upperCase to improve it (before it ordered wrong)
-      function predicatBy(prop){
-       return function(a,b){
-          if( a[prop].toUpperCase() > b[prop].toUpperCase()){
-              return 1;
-          }else if( a[prop].toUpperCase() < b[prop].toUpperCase() ){
-              return -1;
-          }
-          return 0;
-        }  
-      }
-
-      
-      temp = JSON.stringify(mJson);
-      localStorage.friendsJson = temp;
-
-
-      refreshCardsView();
-
-      toastr.success("Your item has been updated", "Edited!");
-
-      //window.alert("edited!");
-      window.location = "#";
-
-    }
-
+  function removeFriend( ){
+    window.alert("about to remove...");
+    if ( !isNumber( index ) ) return
+    var data = getData();
+    var tempName = data.friends[index].name;
+    data.friends.splice(index, 1);       
+    saveData( data );
+    toastr.success(tempName + " deleted!");
+  }
 
 
   function getData(){
@@ -657,18 +497,21 @@
     };
   }
 
-  function saveData (mJson) {
+
+  function saveData (data) {
     console.log("Saving")
-    temp = JSON.stringify(mJson);
-    if (temp) {
-      localStorage.friendsJson = temp;
-      return true;
-    };
+    if( !data ) return;
+    temp = JSON.stringify(data);
+    if( !temp ) return;
+    localStorage.friendsJson = temp;
+    return true;
   }
 
-  function showFriend (id) {
-    // body...
+
+  function showFriend () {
+    t_friend_heart
   }
+
 
   function modifyFriend (id,name,heart,will,help,need) {
   // Get data
@@ -702,50 +545,52 @@
   //add friend and save
     mJson.friends.push(friend);
     saveData( mJson );
-  //show added friend
+  //show added friend (last one)
     showFriend( mJson.friends.length );
   //confirm action to user
     toastr.success("Added!");
   }
 
-    //update / refresh the main page...
-    function refreshCardsView(){
-    
-      //MAE
-      if (index !== undefined && index !== null ) { //ASGA: "null" also!! (especially with new users, they don't have index yet)
-        var mJson = JSON.parse(localStorage.friendsJson);
+  function getField ( data, field ) {
+    var values = []
+    for( x in data )
+      values.push(data[x][field]);
+    return values
+  }
 
-
-        
-        // Reload values
-        document.getElementById("friendName").innerHTML = mJson.friends[index].name;
-
-        //intentions
-        var intentionsArray = mJson.friends[index].intentions;
-        var intentionsString = "";
-        for (var i = 0; i < intentionsArray.length ; i++) {
-
-          intentionsString = intentionsString + "</p><p>"+ intentionsArray[i];
-        }
-        document.getElementById("intention").innerHTML = intentionsString;  
-      //MAE
-
-    }else{  //ASGA
-      document.getElementById("friendName").innerHTML = "You have no friends! :(";
-      document.getElementById("intention").innerHTML = "There is a lot of people out there to pray for! Let's add them!";
-    }
+  function randomizeList( list ) {
+    var random = [];
+    var prob = getField( list, 'need' );
+    for (var i = prob.length - 1; i >= 0; i--) {
+      var n = getRandomItem( prob )
+      prob[n] = 0;
+      random.push( n );
+    };
+    return random;
 
   }
 
-
-
-
+  function getRandomItem ( prob ) {
+  // Compute the total need
+    var sum = 0;
+    for (var i = prob.length - 1; i >= 0; i--) {
+      sum += prob;
+    };
+  // Get random number below total need, and select the right friend
+    var choice = Math.random()*sum;
+    var soFar = 0;
+    for (var i = prob.length - 1; i >= 0; i--) {
+      soFar += prob;
+      if ( choice < soFar ) return i;
+    };
+    return null;
+  }
     // MAE --
     function getRandomFriend ( ) {
       
 
     // Get data
-    	var mJson = JSON.parse(window.localStorage.friendsJson);
+    	var mJson = getData();
     	var friends = mJson.friends;
 
     // Compute the total need
@@ -771,18 +616,20 @@
 
     <script>
 
-      $("div").on("swipeleft",function(){   
-        reload( "left" ); // MAE
+      $("div").on("swipeleft",function(){
+        index-=1;
+        showFriend()
       });   
     
       $("div").on("swiperight",function(){
-        reload( "right" ); // MAE
-      });   
+        index+=1;
+        showFriend()
+      });
 
       $("#myCard").on("taphold",function(){ //#myCard #friendName
         //$(this).hide();
-        window.location = "#editFriend-page";
-      });                    
+        //window.location = "#editFriend-page";
+      });
 
   </script>
 
@@ -790,83 +637,10 @@
   <!-- pages events.. -->
   <script> 
 
-    //cards-page (MAIN)...
-    var index;
-    $( document ).delegate("#cards-page", "pagebeforeshow", function() {
-
-      if (index !== undefined && index !== null ) {//if we got here with an index, keep it
-        //window.alert("1");
-        refreshCardsView();
-
-      }else{//if not, get a new one
-  
-        reload("");
-      }
-
-      
-    });
-
-
-
-
     //friend list page...
     $( document ).delegate("#friend-list-page", "pagebeforeshow", function() {
       //alert('reloading friends listview! :)');
       fillFriendsList(); //reload/fill the listView
-    });
-
-
-    //add friend page..
-    $( document ).delegate("#addFriend-page", "pagebeforeshow", function() {
-       
-        // create the input datalist for the names :)
-        if (window.localStorage.friendsJson){
-          mJson2 = JSON.parse(window.localStorage.friendsJson);
-
-          var optionsHtml = "";
-          for (var i = 0; i < mJson2.friends.length; i++) {
-            optionsHtml = optionsHtml + '<option value="'+mJson2.friends[i].name+'">';
-          };
-
-          document.getElementById("namesDataList").innerHTML = optionsHtml;
-        }//-- end create name suggestions
-
-        
-    });
-
-
-    //edit friend page...
-    $( document ).delegate("#editFriend-page", "pagebeforeshow", function() {
-        // alert('addFriend-page about to be showed!');
-
-        //check / get   json...
-        if (window.localStorage.friendsJson){
-          var mJson = JSON.parse(window.localStorage.friendsJson); //ASG: ("window".localStorage...)
-
-        }else{
-          window.alert("no friends!");
-          window.location = "#";
-          return;
-        }
-        
-        
-        //friend name
-        if ( index === undefined || index==null) {
-          window.alert("no friend selected!");
-          window.location = "#";
-          return;
-        };
-        document.getElementById("friendToEditName").value = mJson.friends[index].name;
-
-        //intentions
-        var intentionsArray = mJson.friends[index].intentions;
-        var intentionsString = "";
-        for (var i = 0; i < intentionsArray.length ; i++) {
-
-          intentionsString = intentionsString + intentionsArray[i] + "\n";
-        }
-        document.getElementById("intentionsToEdit").value = intentionsString;
-        
     });
 
     
@@ -893,10 +667,8 @@
     //data-page beforeshow (ASGA)
     $( document ).delegate("#data-page", "pagebeforeshow", function() {
 
-      if (window.localStorage){//if we have local storage...
-
-        jsonn = JSON.parse(window.localStorage.friendsJson);
-
+      var jsonn = getData()
+      if ( jsonn ) {
         str = JSON.stringify(jsonn, null, 2);
         document.getElementById("friendJsonInput").value = str;
         window.alert(str);
@@ -925,10 +697,6 @@
 
         window.localStorage.friendsJson = s;
     });
-
-
-
-
 
 
     function getUrlParameter(sParam)
