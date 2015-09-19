@@ -79,7 +79,7 @@
     </div>
 
   </div>
-<!-- (end main)-->
+<!-- ( end main )-->
 
 <!-- FOOTER -->
   <div data-role="footer" data-position="fixed">
@@ -165,8 +165,8 @@
     <h2>Developer</h2>
     <a href="#cloudStorage-page" class="ui-btn ui-corner-all">Cloud storage</a> 
     <hr>
-    <a href="#" onClick="backup()" class="ui-btn ui-corner-all">do backup (test)</a>
-    <a href="#" onClick="restore()" class="ui-btn ui-corner-all">restore backup (test)</a>
+    <a href="#" onClick="backup()" class="ui-btn ui-corner-all">do backup ( test )</a>
+    <a href="#" onClick="restore()" class="ui-btn ui-corner-all">restore backup ( test )</a>
     <hr>
     <a href="#data-page" class="ui-btn ui-corner-all">Edit raw JSON</a>
     <a href="#" onClick="clearLocalStorage()" class="ui-btn ui-corner-all">Clear all local storage</a>    
@@ -246,8 +246,8 @@
 
   <div data-role="main" class="ui-content">
       <h2>Backup</h2>
-        <input type="button" onClick='backupOrRestore("backup")' value="Do backup">
-        <input type="button" onClick='backupOrRestore("restore")' value="Restore backup">
+        <input type="button" onClick='backupOrRestore( "backup" )' value="Do backup">
+        <input type="button" onClick='backupOrRestore( "restore" )' value="Restore backup">
 
         <!-- radio buttons -->
         
@@ -269,19 +269,19 @@
 
 /* Visibility */
   // Get Browser-Specifc Prefix
-  function getBrowserPrefix() {
+  function getBrowserPrefix(){
      
     // Check for the unprefixed property.
-    if ('hidden' in document) {
+    if ( 'hidden' in document ) {
       return null;
     }
    
     // All the possible prefixes.
     var browserPrefixes = ['moz', 'ms', 'o', 'webkit'];
    
-    for (var i = 0; i < browserPrefixes.length; i++) {
+    for ( var i = 0; i < browserPrefixes.length; i++ ) {
       var prefix = browserPrefixes[i] + 'Hidden';
-      if (prefix in document) {
+      if ( prefix in document ) {
         return browserPrefixes[i];
       }
     }
@@ -291,8 +291,8 @@
   }
    
   // Get Browser Specific Hidden Property
-  function hiddenProperty(prefix) {
-    if (prefix) {
+  function hiddenProperty(prefix ) {
+    if ( prefix ) {
       return prefix + 'Hidden';
     } else {
       return 'hidden';
@@ -300,8 +300,8 @@
   }
    
   // Get Browser Specific Visibility State
-  function visibilityState(prefix) {
-    if (prefix) {
+  function visibilityState(prefix ) {
+    if ( prefix ) {
       return prefix + 'VisibilityState';
     } else {
       return 'visibilityState';
@@ -309,8 +309,8 @@
   }
    
   // Get Browser Specific Event
-  function visibilityEvent(prefix) {
-    if (prefix) {
+  function visibilityEvent(prefix ) {
+    if ( prefix ) {
       return prefix + 'visibilitychange';
     } else {
       return 'visibilitychange';
@@ -319,12 +319,12 @@
 
   // Get Browser Prefix
   var prefix = getBrowserPrefix();
-  var hidden = hiddenProperty(prefix);
-  var visibilityState = visibilityState(prefix);
-  var visibilityEvent = visibilityEvent(prefix);
+  var hidden = hiddenProperty( prefix );
+  var visibilityState = visibilityState( prefix );
+  var visibilityEvent = visibilityEvent( prefix );
    
-  document.addEventListener(visibilityEvent, function(event) {
-    if (!document[hidden]) {
+  document.addEventListener( visibilityEvent, function( event ) {
+    if ( !document[hidden] ) {
       // The page is visible.
       console.log( "visible" )
     } else {
@@ -334,29 +334,29 @@
   });
 
 
-  function make_editable ( id ) {
+  function make_editable( id ) {
     var t  = '#'+id
     var ta = '#ta_'+id
-    $( t ).after(function() {
+    $( t ).after( function() {
       var textarea='<textarea id="ta_'+id+'" rows="2" style="display: none;"></textarea>'
       return textarea;
     });
 
     $( t ).click( function(){
-      $(ta).val( $(t).text() )
-      $(t ).hide()
-      $(ta).show()
+      $( ta ).val( $( t ).text() )
+      $( t ).hide()
+      $( ta ).show()
     });
 
-    $(ta).mouseleave(function(){
-      $(t ).text( $(ta).val() )
-      $(ta).hide()
-      $(t ).show()
+    $( ta ).mouseleave( function(){
+      $( t ).text( $( ta ).val() )
+      $( ta ).hide()
+      $( t ).show()
     });
   }
 
-  var items = document.getElementsByClassName('editable'), i;
-  for (var i = 0; i < items.length; i ++) {
+  var items = document.getElementsByClassName( 'editable' ), i;
+  for ( var i = 0; i < items.length; i ++ ) {
     make_editable( items[i].id )
   }
   
@@ -370,83 +370,83 @@
 
 
     function restoreCloudBackup1(){
-      localStorage.friendsJson = document.getElementById("friendJsonToBackup").value;
-      window.alert("Restored!");
+     localStorage.friendsJson = document.getElementById( "friendJsonToBackup" ).value;
+      window.alert( "Restored!" );
     }//end restoreCloudBackup
 
 
     //--- for cloud storage page
-    function requestCloudAction() {
-      var myRadio = $('input[name=action]');
+    function requestCloudAction(){
+      var myRadio = $( 'input[name=action]' );
 
-      var action = myRadio.filter(':checked').val();
-      var user = document.getElementById("userFormInput").value;
-      var pass = document.getElementById("passwordFormInput").value;
+      var action = myRadio.filter( ':checked' ).val();
+      var user = document.getElementById( "userFormInput" ).value;
+      var pass = document.getElementById( "passwordFormInput" ).value;
       var json = "null";
 
-      if (action=="upload"){// if we are going to upload, pass the json as parameter!
+      if ( action == "upload" ){// if we are going to upload, pass the json as parameter!
         json = localStorage.friendsJson;
       }
 
       //save the data to make it easier for the user
       localStorage.user = user;
-      document.getElementById("userHeader").innerHTML = user;
+      document.getElementById( "userHeader" ).innerHTML = user;
       localStorage.pass = pass;
 
   
       var xmlhttp;
-      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+      if ( window.XMLHttpRequest ){// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp=new XMLHttpRequest();
         }
       else{// code for IE6, IE5
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        xmlhttp=new ActiveXObject( "Microsoft.XMLHTTP" );
         }
 
       xmlhttp.onreadystatechange=function(){
 
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-          if (action=="upload"){
-            window.alert("about to update your cloud json file (overriding)...");
-            document.getElementById("friendJsonToBackup").value = localStorage.friendsJson;
+        if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ){
+          if ( action == "upload" ){
+            window.alert( "about to update your cloud json file ( overriding )..." );
+            document.getElementById( "friendJsonToBackup" ).value = localStorage.friendsJson;
 
-            temp = JSON.parse(xmlhttp.responseText);
+            temp = JSON.parse( xmlhttp.responseText );
 
-            if (temp.Status){ //if we receive some status message...
-              window.alert(temp.Status);
+            if ( temp.Status ){ //if we receive some status message...
+              window.alert( temp.Status );
             }
             //show a toast message...
-            if (temp.Status=="Success"){
-              toastr.success("Data saved on the cloud!", "Success");
+            if ( temp.Status == "Success" ){
+              toastr.success( "Data saved on the cloud!", "Success" );
             }else{
-              toastr.error(temp.Status, "Error");
+              toastr.error( temp.Status, "Error" );
             }
             
 
-          }else if (action=="download"){
-            window.alert("downloading...");
+          }else if ( action == "download" ){
+            window.alert( "downloading..." );
 
-            temp = JSON.parse(xmlhttp.responseText);
-            if (temp.Status){ //if we receive some status message...
-              window.alert(temp.Status);
+            temp = JSON.parse( xmlhttp.responseText );
+            if ( temp.Status ){ //if we receive some status message...
+              window.alert( temp.Status );
               return; //finish this..
             }
 
-            cloudJson = JSON.stringify(temp);
-            document.getElementById("friendJsonToBackup").value=JSON.stringify(temp, null, 2);
+            cloudJson = JSON.stringify( temp );
+            document.getElementById( "friendJsonToBackup" ).value=JSON.stringify( temp, null, 2 );
 
-            toastr.warning('Press "restore it" button to finsih restoring',"Almost there...");
+            toastr.warning( 'Press "restore it" button to finsih restoring', "Almost there..." );
 
-          }else if (action=="newuser"){
-            window.alert("about to create a new user ("+user+")...");
-            res = JSON.parse(xmlhttp.responseText);
+          }else if ( action == "newuser" ){
+            window.alert( "about to create a new user ( "+user+" )..." );
+            res = JSON.parse( xmlhttp.responseText );
             
-              //window.alert(res.Status);
+              //window.alert( res.Status );
 
               //show a toastr message...
-              if (res.Status=="Success"){
-                toastr.success("user "+user+" creted!", "Success");
+              if ( res.Status == "Success" ){
+                toastr.success( "user "+user+" creted!", "Success" );
               }else{
-                toastr.error(res.Status, "Error");
+                toastr.error( res.Status, "Error" );
               }
 
           }
@@ -454,37 +454,37 @@
         }
       }
 
-      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      xmlhttp.open( "POST", "www.arrietaeguren.es/sop/cards/cloudStorage.php", true );
       
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
       
-      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      xmlhttp.send( "action="+action+"&user="+user+"&pass="+pass+"&json="+json );
       
     }// end requestCloudAction
 
  
 
-  function fillFriendsList(){ //ASGA
+  function fillFriendsList(){//ASGA
 
     data = getData();
-    //json = {"friends":[{"name":"Berni","intentions":["family","beca"],"need":0.9},{"name":"Fati","intentions":["notas"],"need":0.7},{"name":"Alex","intentions":["notas","gloria"],"need":0.5}]};
+    //json = {"friends":[{"name":"Berni", "intentions":["family", "beca"], "need":0.9}, {"name":"Fati", "intentions":["notas"], "need":0.7}, {"name":"Alex", "intentions":["notas", "gloria"], "need":0.5}]};
     array = data.friends;
     //---generate the html for the content of the listView
     listViewContentHtml = '';
-    for (i = 0; i < array.length; i++) { 
+    for ( i = 0; i < array.length; i++ ) { 
       listViewContentHtml = listViewContentHtml+'<li ind="'+i+'"><a href="#friend-list-page">'+array[i].name+'<span class="ui-li-count">'+array[i].need+'</span></a></li>';
     }
 
     //---add the html
-    document.getElementById("friendsListView").innerHTML = listViewContentHtml;
+    document.getElementById( "friendsListView" ).innerHTML = listViewContentHtml;
 
 
    $( "#friendsListView" ).listview( "refresh" ); //important!!
 
     //ASGA list view listener 
-    $('#friendsListView').children('li').on('click', function () {
-       //alert('index=' + $(this).attr('ind'));
-       index=$(this).attr('ind'); //(put that attribute within the <li> tag, and you are done! :)
+    $( '#friendsListView' ).children( 'li' ).on( 'click', function (){
+       //alert( 'index=' + $( this ).attr( 'ind' ) );
+       index=$( this ).attr( 'ind' ); //( put that attribute within the <li> tag, and you are done! :)
        window.location = "#cards-page";
 
     });
@@ -495,58 +495,64 @@
   var history = [];
 
   function showNewFriend( side ){
-    if ( isNumber( index ) ){
-      var name  = document.getElementById("friendName").innerHTML
-      var heart = document.getElementById("t_friend_heart").innerHTML
-      var will  = document.getElementById("t_friend_will").innerHTML
-      var help  = document.getElementById("t_friend_help").innerHTML
-      var need  = side == "right"? 100 : 50;
-      modifyFriend(index,name,heart,will,help,need)
-    }
-
+    saveChangesToCurrentFriend();
     index = getRandomFriend();
     showFriend()
   }
 
-  function updateNeed ( side ) {
+  function updateNeed( side ) {
     var data = getData();
     if ( !isNumber( index ) ) return
     var need = mJson.friends[index].need*10;
-    if (side=="right") {
+    if ( side == "right" ) {
       need = need<9? need+1 : 10;
-    } else if (side=="left") {
+    } else if ( side == "left" ) {
       need = need>3? need-1 : 2;
     };
     mJson.friends[index].need = need/10;
     saveData( mJson )
   }
+
+  function saveChangesToCurrentFriend() {
+    if ( isNumber( index ) ){
+      var name  = document.getElementById( "friendName" ).innerHTML
+      var heart = document.getElementById( "t_friend_heart" ).innerHTML
+      var will  = document.getElementById( "t_friend_will" ).innerHTML
+      var help  = document.getElementById( "t_friend_help" ).innerHTML
+      var need  = side == "right"? 100 : 50;
+      modifyFriend( index, name, heart, will, help, need )
+    }
+  }
  
-   
-  function isNumber ( s ) {
-    return (s !== undefined && s !== null)
+  function isNumber( s ) {
+    return ( s ! == undefined && s ! == null )
+  }
+
+  function isString( s ) {
+    return ( typeof s === 'string' || s instanceof String )
   }
 
   function init() {//initialize the local storage...
-    if (!window.localStorage.friendsJson){ //if there isn't data on the friends local storage:
+    if ( !window.localStorage.friendsJson ){ //if there isn't data on the friends local storage:
       window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
     }
 
 //toast-bottom-center //toast-top-right
     toastr.options = {
-      "closeButton": false,
-      "debug": false,
-      "newestOnTop": false,
-      "progressBar": false,
-      "positionClass": "toast-bottom-center",
-      "preventDuplicates": true,
-      "onclick": null,
-      "showDuration": "300",
-      "hideDuration": "1000",
-      "timeOut": "2700",
-      "extendedTimeOut": "1000",
-      "showEasing": "swing",
-      "hideEasing": "linear",
-      "showMethod": "fadeIn",
+      "closeButton": false, 
+      "debug": false, 
+      "newestOnTop": false, 
+      "progressBar": false, 
+      "positionClass": "toast-bottom-center", 
+      "preventDuplicates": true, 
+      "onclick": null, 
+      "showDuration": "300", 
+      "hideDuration": "1000", 
+      "timeOut": "2700", 
+      "extendedTimeOut": "1000", 
+      "showEasing": "swing", 
+      "hideEasing": "linear", 
+      "showMethod": "fadeIn", 
       "hideMethod": "fadeOut"
     }
   }
@@ -554,64 +560,63 @@
  
 
   function saveDataJsonFromDataPage() {
-    var json = document.getElementById("friendJsonInput").value
+    var json = document.getElementById( "friendJsonInput" ).value
     saveData( json );
-    console.log(localStorage.friendsJson);
-    toastr.success("Saved!");
+    console.log( localStorage.friendsJson );
+    toastr.success( "Saved!" );
   }
 
 
   function clearLocalStorage(){
     window.localStorage.clear();
     init();
-    toastr.success("all our local storage cleared!");
+    toastr.success( "all our local storage cleared!" );
   }
 
 
-  function removeFriend( ){
-    window.alert("about to remove...");
+  function removeFriend(){
+    window.alert( "about to remove..." );
     if ( !isNumber( index ) ) return
     var data = getData();
     var tempName = data.friends[index].name;
-    data.friends.splice(index, 1);       
+    data.friends.splice( index, 1 );       
     saveData( data );
-    toastr.success(tempName + " deleted!");
+    toastr.success( tempName + " deleted!" );
   }
 
 
   function getData(){
-    if (localStorage.friendsJson) {
-      return JSON.parse(localStorage.friendsJson);
+    if ( localStorage.friendsJson ) {
+      return JSON.parse( localStorage.friendsJson );
     } else{
       return false;
     };
   }
 
 
-  function saveData (data) {
-    console.log("Saving")
+  function saveData ( data ) {
+    console.log( "Saving" )
     if( !data ) return;
-    temp = JSON.stringify(data);
+    temp = JSON.stringify( data );
     if( !temp ) return;
     localStorage.friendsJson = temp;
     return true;
   }
 
 
-  function showFriend () {
-    console.log( "Showing friend " + index)
+  function showFriend() {
     var mJson = getData()
     var friend = mJson.friends[index];
-    console.log(friend.name)
-    document.getElementById("friendName").innerHTML     = friend.name;
-    document.getElementById("t_friend_heart").innerHTML = friend.heart;
-    document.getElementById("t_friend_will").innerHTML  = friend.will;
-    document.getElementById("t_friend_help").innerHTML  = friend.help;
+    console.log( "Showing friend ( "+index+" ) "+friend.name )
+    document.getElementById( "friendName" ).innerHTML     = friend.name;
+    document.getElementById( "t_friend_heart" ).innerHTML = friend.heart;
+    document.getElementById( "t_friend_will" ).innerHTML  = friend.will;
+    document.getElementById( "t_friend_help" ).innerHTML  = friend.help;
   }
 
 
-  function modifyFriend (id,name,heart,will,help,need) {
-    console.log("Modifiying friend "+id+" "+name+" "+heart+" "+will+" "+help+" "+need)
+  function modifyFriend( id, name, heart, will, help, need ) {
+    console.log( "Modifiying friend "+id+" "+name+" "+heart+" "+will+" "+help+" "+need )
   // Get data
     var mJson = getData()
     var original = mJson.friends[id];
@@ -641,25 +646,25 @@
     friend.help  = "Click to edit this field";
     friend.need  = 100;
   //add friend and save
-    mJson.friends.push(friend);
+    mJson.friends.push( friend );
     saveData( mJson );
-  //show added friend (last one)
+  //show added friend ( last one )
     showFriend( mJson.friends.length );
   //confirm action to user
-    toastr.success("Added!");
+    toastr.success( "Added!" );
   }
 
-  function getField ( data, field ) {
+  function getField( data, field ) {
     var values = []
     for( x in data )
-      values.push(data[x][field]);
+      values.push( data[x][field] );
     return values
   }
 
   function randomizeList( list ) {
     var random = [];
     var prob = getField( list, 'need' );
-    for (var i = prob.length - 1; i >= 0; i--) {
+    for ( var i = prob.length - 1; i >= 0; i-- ) {
       var n = getRandomItem( prob )
       prob[n] = 0;
       random.push( n );
@@ -668,23 +673,23 @@
 
   }
 
-  function getRandomItem ( prob ) {
+  function getRandomItem( prob ) {
   // Compute the total need
     var sum = 0;
-    for (var i = prob.length - 1; i >= 0; i--) {
+    for ( var i = prob.length - 1; i >= 0; i-- ) {
       sum += prob;
     };
   // Get random number below total need, and select the right friend
     var choice = Math.random()*sum;
     var soFar = 0;
-    for (var i = prob.length - 1; i >= 0; i--) {
+    for ( var i = prob.length - 1; i >= 0; i-- ) {
       soFar += prob;
       if ( choice < soFar ) return i;
     };
     return null;
   }
 
-  function getRandomFriend ( ) {
+  function getRandomFriend() {
     
   // Get data
   	var mJson = getData();
@@ -692,13 +697,13 @@
 
   // Compute the total need
       var sum = 0;
-      for (var i = friends.length - 1; i >= 0; i--) {
+      for ( var i = friends.length - 1; i >= 0; i-- ) {
           sum += friends[i].need;
       };
   // Get random number below total need, and select the right friend
       var choice = Math.random()*sum;
       var soFar = 0;
-      for (var i = friends.length - 1; i >= 0; i--) {
+      for ( var i = friends.length - 1; i >= 0; i-- ) {
           soFar += friends[i].need;
           if ( choice < soFar ) {
           	return i;
@@ -710,18 +715,18 @@
 
 
 
-  $("div").on("swipeleft",function(){
-    var i = history.indexOf(index);
+  $( "div" ).on( "swipeleft", function(){
+    var i = history.indexOf( index );
     index = history[i-1] || index
     showFriend()
-  });   
+  });
 
-  $("div").on("swiperight",function(){
+  $( "div" ).on( "swiperight", function(){
     showNewFriend()
   });
 
-  /*$("#myCard").on("taphold",function(){ //#myCard #friendName
-    //$(this).hide();
+  /*$( "#myCard" ).on( "taphold", function(){ //#myCard #friendName
+    //$( this ).hide();
     //window.location = "#editFriend-page";
   });*/
 
@@ -732,44 +737,44 @@
   <script> 
 
     //friend list page...
-    $( document ).delegate("#friend-list-page", "pagebeforeshow", function() {
-      //alert('reloading friends listview! :)');
+    $( document ).delegate( "#friend-list-page", "pagebeforeshow", function() {
+      //alert( 'reloading friends listview! :)' );
       fillFriendsList(); //reload/fill the listView
     });
 
     
     //before show cloudStorage-page
-    $( document ).delegate("#cloudStorage-page", "pagebeforeshow", function() {
-      if (localStorage.user){
-       document.getElementById("userFormInput").value = localStorage.user;
-       document.getElementById("passwordFormInput").value = localStorage.pass;
+    $( document ).delegate( "#cloudStorage-page", "pagebeforeshow", function() {
+      if ( localStorage.user ){
+       document.getElementById( "userFormInput" ).value = localStorage.user;
+       document.getElementById( "passwordFormInput" ).value = localStorage.pass;
       }
       
     });
 
 
     //before show backup2-page
-    $( document ).delegate("#backup2-page", "pagebeforeshow", function() {
-      if (localStorage.user){
-       document.getElementById("userFormInput2").value = localStorage.user;
-       document.getElementById("passwordFormInput2").value = localStorage.pass;
-       document.getElementById("userHeader").innerHTML = localStorage.user;
+    $( document ).delegate( "#backup2-page", "pagebeforeshow", function() {
+      if ( localStorage.user ){
+       document.getElementById( "userFormInput2" ).value = localStorage.user;
+       document.getElementById( "passwordFormInput2" ).value = localStorage.pass;
+       document.getElementById( "userHeader" ).innerHTML = localStorage.user;
       }
       
     });
 
-    //data-page beforeshow (ASGA)
-    $( document ).delegate("#data-page", "pagebeforeshow", function() {
+    //data-page beforeshow ( ASGA )
+    $( document ).delegate( "#data-page", "pagebeforeshow", function() {
 
       var jsonn = getData()
       if ( jsonn ) {
-        str = JSON.stringify(jsonn, null, 2);
-        document.getElementById("friendJsonInput").value = str;
-        window.alert(str);
+        str = JSON.stringify( jsonn, null, 2 );
+        document.getElementById( "friendJsonInput" ).value = str;
+        window.alert( str );
 
       }else{
       //show a json example on the textarea!!
-        document.getElementById("friendJsonInput").value = '{"friends":[{"name":"alex", "intentions":["intention1","intention2"], "need":0.7}, {"name":"jarri", "intentions":["intention1","intention2"], "need":0.8}]}';
+        document.getElementById( "friendJsonInput" ).value = '{"friends":[{"name":"alex", "intentions":["intention1", "intention2"], "need":0.7}, {"name":"jarri", "intentions":["intention1", "intention2"], "need":0.8}]}';
         init();
       }
       
@@ -777,30 +782,30 @@
     });//--end
 
 
-    //slider listener... (it requires the slider to be within a div)
-    $('#div-slider').on('slidestop', "#need-slider", function(event){  
+    //slider listener... ( it requires the slider to be within a div )
+    $( '#div-slider' ).on( 'slidestop', "#need-slider", function( event ){  
         
-        // alert("stop: "+$(this).val()+" "+index);
-        tempJsonn = JSON.parse(localStorage.friendsJson);
-        mval = $(this).val() / 10 ;
+        // alert( "stop: "+$( this ).val()+" "+index );
+        tempJsonn = JSON.parse( localStorage.friendsJson );
+        mval = $( this ).val() / 10 ;
     
 
         tempJsonn.friends[index].need = mval;
-        var s = JSON.stringify(tempJsonn);
+        var s = JSON.stringify( tempJsonn );
      
 
         window.localStorage.friendsJson = s;
     });
 
 
-    function getUrlParameter(sParam)
+    function getUrlParameter( sParam )
     {
-        var sPageURL = window.location.search.substring(1);
-        var sURLVariables = sPageURL.split('&');
-        for (var i = 0; i < sURLVariables.length; i++) 
+        var sPageURL = window.location.search.substring( 1 );
+        var sURLVariables = sPageURL.split( '&' );
+        for ( var i = 0; i < sURLVariables.length; i++ ) 
         {
-            var sParameterName = sURLVariables[i].split('=');
-            if (sParameterName[0] == sParam) 
+            var sParameterName = sURLVariables[i].split( '=' );
+            if ( sParameterName[0] == sParam ) 
             {
                 return sParameterName[1];
             }
@@ -816,46 +821,46 @@
   <script> 
 
     function backup(){
-      backupOrRestore("backup");
+      backupOrRestore( "backup" );
     }
 
     function restore(){
-      backupOrRestore("restore");
+      backupOrRestore( "restore" );
     }
 
 
 
-    function backupOrRestore(ToDO) {
-      //window.alert("doing "+ToDO);
+    function backupOrRestore( ToDO ) {
+      //window.alert( "doing "+ToDO );
 
       var action = "null";
 
-        if(ToDO=="backup"){
+        if( ToDO == "backup" ){
           action = "upload";
-          if (confirm("You are about to update your cloud data (overriding the previous one).\nContinue?") == true) {
+          if ( confirm( "You are about to update your cloud data ( overriding the previous one ).\nContinue?" ) == true ) {
                // x = "You pressed OK!";
           } else {
                // x = "You pressed Cancel!";
-               toastr.error("ok, backup canceled!","Canceled");
+               toastr.error( "ok, backup canceled!", "Canceled" );
                return;
           }
 
-        }else if(ToDO=="restore"){
+        }else if( ToDO == "restore" ){
           action = "download";
-          if (confirm("RESTORE will replace your current local data with your data from the cloud.\nContinue?") == true) {
+          if ( confirm( "RESTORE will replace your current local data with your data from the cloud.\nContinue?" ) == true ) {
                // x = "You pressed OK!";
           } else {
                // x = "You pressed Cancel!";
-               toastr.error("ok, restored canceled!","Canceled");
+               toastr.error( "ok, restored canceled!", "Canceled" );
                return;
           }
 
         }
 
-      //if (window.localStorage.user==null || window.localStorage.pass==null ){
-      if (localStorage.logged!="true"){
-        toastr.error("you are not logged in", "Error");
-        $("#userPanel").panel("open");
+      //if ( window.localStorage.user == null || window.localStorage.pass == null ){
+      if ( localStorage.logged!="true" ){
+        toastr.error( "you are not logged in", "Error" );
+        $( "#userPanel" ).panel( "open" );
         return;
       }
 
@@ -863,109 +868,109 @@
       var pass = window.localStorage.pass;
       var json = "null";
 
-      if (action=="upload"){// if we are going to upload, pass the json as parameter!
+      if ( action == "upload" ){// if we are going to upload, pass the json as parameter!
         json = window.localStorage.friendsJson;
       }
 
 
       var xmlhttp;
-      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+      if ( window.XMLHttpRequest ){// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp=new XMLHttpRequest();
         }
       else{// code for IE6, IE5
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        xmlhttp=new ActiveXObject( "Microsoft.XMLHTTP" );
         }
 
       xmlhttp.onreadystatechange=function(){
 
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+        if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ){
           //--case upload
-          if (action=="upload"){
-            //window.alert("You are about to update your cloud data\n(This will OVERRIDE the previous cloud data)");
+          if ( action == "upload" ){
+            //window.alert( "You are about to update your cloud data\n( This will OVERRIDE the previous cloud data )" );
 
-            temp = JSON.parse(xmlhttp.responseText);
+            temp = JSON.parse( xmlhttp.responseText );
 
-            if (temp.Status){ //if we receive some status message...
+            if ( temp.Status ){ //if we receive some status message...
 
               //show a toast message...
-              if (temp.Status=="Success"){
-                toastr.success("Your data is now on the cloud. Safe and private :)", "Success");
+              if ( temp.Status == "Success" ){
+                toastr.success( "Your data is now on the cloud. Safe and private :)", "Success" );
               }else{
-                toastr.error(temp.Status, "Error :(");
+                toastr.error( temp.Status, "Error :( " );
               }
             }//end if ()
 
 
           //--case download
-          }else if (action=="download"){
-            //window.alert("You are about to RESTORE all your local data.\n(This will replace your current local data with the data on the cloud)");
+          }else if ( action == "download" ){
+            //window.alert( "You are about to RESTORE all your local data.\n( This will replace your current local data with the data on the cloud )" );
 
-            temp = JSON.parse(xmlhttp.responseText);
+            temp = JSON.parse( xmlhttp.responseText );
 
-            if (temp.Status){ //if we receive some status message...
-              //window.alert(temp.Status);
-              toastr.error(temp.Status, "Error :(");
+            if ( temp.Status ){ //if we receive some status message...
+              //window.alert( temp.Status );
+              toastr.error( temp.Status, "Error :( " );
 
               return; //finish this.., BECAUSE we shouldn't receive a status message if we receive the data-json.
             }
 
-            cloudJson = JSON.stringify(temp);
+            cloudJson = JSON.stringify( temp );
             window.localStorage.friendsJson=cloudJson;//remove the extra break lines...
-            toastr.success("Your data has been resotored! :)", "Success");
-            //window.alert("success");
+            toastr.success( "Your data has been resotored! :)", "Success" );
+            //window.alert( "success" );
 
           //--case default
           }else {
-            window.alert("unkown action");
+            window.alert( "unkown action" );
 
           }
           
         }
       }
 
-      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      xmlhttp.open( "POST", "www.arrietaeguren.es/sop/cards/cloudStorage.php", true );
       
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
       
-      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      xmlhttp.send( "action="+action+"&user="+user+"&pass="+pass+"&json="+json );
       
-    }//end backupOrRestore(ToDO)
+    }//end backupOrRestore( ToDO )
 
 
     function logout(){
-      updateUserDataCrossTheApp("","");
+      updateUserDataCrossTheApp( "", "" );
 
     }
 
-    function updateUserDataCrossTheApp(user, password){
+    function updateUserDataCrossTheApp( user, password ){
       localStorage.user = user;
       localStorage.pass = password;
-      document.getElementById("userFormInput2").value = user;
-      document.getElementById("passwordFormInput2").value = password;
-      document.getElementById("userHeader").innerHTML = user;
+      document.getElementById( "userFormInput2" ).value = user;
+      document.getElementById( "passwordFormInput2" ).value = password;
+      document.getElementById( "userHeader" ).innerHTML = user;
 
     }
 
     
     function login(){
       window.location = "#cards-page";
-      showNewFriend("")
-      //document.getElementById("input_username").value
+      showNewFriend( "" )
+      //document.getElementById( "input_username" ).value
 
     }
     /*
       var action = "download";
       var json = "null";
 
-      var user = document.getElementById("userFormInput2").value;
-      var pass = document.getElementById("passwordFormInput2").value;
+      var user = document.getElementById( "userFormInput2" ).value;
+      var pass = document.getElementById( "passwordFormInput2" ).value;
       
 
 
       //save the data to make it easier for the user
       /*localStorage.user = user;
       localStorage.pass = pass;
-      document.getElementById("userHeader").innerHTML = user;* /
+      document.getElementById( "userHeader" ).innerHTML = user;* /
 
       
 
@@ -974,29 +979,29 @@
 
   
       var xmlhttp;
-      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+      if ( window.XMLHttpRequest ){// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp=new XMLHttpRequest();
         }
       else{// code for IE6, IE5
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        xmlhttp=new ActiveXObject( "Microsoft.XMLHTTP" );
         }
 
       xmlhttp.onreadystatechange=function(){
 
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+        if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ){
 
-          temp = JSON.parse(xmlhttp.responseText);
+          temp = JSON.parse( xmlhttp.responseText );
 
           //show a toast message...
-            if (temp.Status=="Success" || temp.friends){
-              $("#userPanel").panel("close");
-              toastr.success("you are in ;)", "Success");
+            if ( temp.Status == "Success" || temp.friends ){
+              $( "#userPanel" ).panel( "close" );
+              toastr.success( "you are in ; )", "Success" );
               window.localStorage.logged = "true";
-              updateUserDataCrossTheApp(user, pass);
+              updateUserDataCrossTheApp( user, pass );
 
             }else{
-              toastr.error(temp.Status, "Error");
-              updateUserDataCrossTheApp("","");
+              toastr.error( temp.Status, "Error" );
+              updateUserDataCrossTheApp( "", "" );
               window.localStorage.logged = "false";
             }
 
@@ -1004,75 +1009,89 @@
         }
       }
 
-      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
+      xmlhttp.open( "POST", "www.arrietaeguren.es/sop/cards/cloudStorage.php", true );
       
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
       
-      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
+      xmlhttp.send( "action="+action+"&user="+user+"&pass="+pass+"&json="+json );
       
     }// end login*/
 
 
-    function post ( url, params, onsucces, onerror ) {
-      // body...
+  function post( url, params, onsucces, onerror ) {
+
+    if ( window.XMLHttpRequest ){// code for IE7+, Firefox, Chrome, Opera, Safari
+      var xmlhttp = new XMLHttpRequest();
+    } else{// code for IE6, IE5
+      var xmlhttp = new ActiveXObject( "Microsoft.XMLHTTP" );
     }
 
-
-
-    function createUser(){
-   
-      var action = "newuser";
-      var user = document.getElementById("userFormInput2").value;
-      var pass = document.getElementById("passwordFormInput2").value;
-      var json = "null";
-
-
-      //save the data to make it easier for the user
-      localStorage.user = user;
-      document.getElementById("userHeader").innerHTML = user;
-      localStorage.pass = pass;
-
-  
-      var xmlhttp;
-      if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp=new XMLHttpRequest();
-        }
-      else{// code for IE6, IE5
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-
-      xmlhttp.onreadystatechange=function(){
-
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-
-          temp = JSON.parse(xmlhttp.responseText);
-
-          //show a toast message...
-            if (temp.Status=="Success"){
-              toastr.success("User "+user+" created!", "Success");
-            }else{
-              toastr.error(temp.Status, "Error");
-              document.getElementById("userFormInput2").value = "";
-              document.getElementById("passwordFormInput2").value = "";
-              localStorage.user = null;
-              document.getElementById("userHeader").innerHTML = "cloud";
-              localStorage.pass = null;
-            }
-
-    
-        }
+    xmlhttp.onreadystatechange = function() {
+      if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ){
+        temp = JSON.parse( xmlhttp.responseText );
+        if( temp.Status && temp.Status ! == "Success" ){
+          onerror( temp );
+        } else {
+          onsucces( temp );  
+        }        
+      } else {
+        temp = { 'Status': 'Network error' };
+        onerror( temp );
       }
+    }
 
-      xmlhttp.open("POST","www.arrietaeguren.es/sop/cards/cloudStorage.php",true);
-      
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      
-      xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
-      
-    }// end create user
+    xmlhttp.open( "POST", "url", true );
+    xmlhttp.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+    params = arrayToQueryString( params );
+    xmlhttp.send( params );
+  }
 
 
-  </script>
+  function arrayToQueryString( arr ){
+
+    if ( isString( arr ) ) return arr;
+
+    var out = new Array();
+    for ( key in this ){
+      out.push( key + '=' + encodeURIComponent( arr[key] ) );
+    }
+    return out.join( '&' );
+  }
+
+
+
+  function createUser(){
+   
+    var params    = {};
+    params.action = "newuser";
+    params.user   = document.getElementById( "userFormInput2" ).value;
+    params.pass   = document.getElementById( "passwordFormInput2" ).value;
+    params.json   = "null";
+
+    var url       = "www.arrietaeguren.es/sop/cards/cloudStorage.php";
+
+    function success( temp ) {
+      localStorage.user = user;
+      document.getElementById( "userHeader" ).innerHTML = user;
+      localStorage.pass = pass;
+      toastr.success( "User "+user+" created!", "Success" );
+    }
+
+    function error( temp ) {
+      toastr.error( temp.Status, "Error" );
+      document.getElementById( "userFormInput2" ).value = "";
+      document.getElementById( "passwordFormInput2" ).value = "";
+      localStorage.user = null;
+      document.getElementById( "userHeader" ).innerHTML = "cloud";
+      localStorage.pass = null;
+    }
+        
+    post( url, params, success, error )
+    
+  }// end create user
+
+
+</script>
 
 </body>
 </html>
