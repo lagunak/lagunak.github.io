@@ -16,8 +16,8 @@
    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
   <!-- toast -->
-  <link href="toast/toastr2.css" rel="stylesheet"/>
-  <script src="toast/toastr.js"></script>
+  <link href="http://arrietaeguren.es/sop/toast/toastr2.css" rel="stylesheet"/>
+  <script src="http://arrietaeguren.es/sop/toast/toastr.js"></script>
 
 
 </head>
@@ -130,7 +130,7 @@
 
 
 
-<!-- ***********   EDIT FRIEND-PAGE **********************  -->
+<!-- ***********   EDIT FRIEND-PAGE **********************  - ->
 <div data-role="page" id="editFriend-page">
 
   <div data-role="main" class="ui-content">
@@ -143,18 +143,18 @@
     <p>Intentions:
     <textarea id="intentionsToEdit" placeholder="intentions..."></textarea></p>
 
-    <!-- <input name="need-slider" id="need-sliderToAdd" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range"> -->
+    <!- - <input name="need-slider" id="need-sliderToAdd" min="0" max="10" value="5" data-show-value="true" data-popup-enabled="true" data-highlight="true" type="range"> - ->
     <button onClick="editFriend()" class="ui-btn">Save changes!</button>
     <button onClick="removeFriend()" class="ui-btn">Remove friend</button>
     
   </div>
 
-  <!-- FOOTER -->
+  <!- - FOOTER - ->
   <div data-role="footer" data-position="fixed">
     <a href="#" class="ui-btn" data-rel="back">Back</a>
   </div>
 
-</div> <!-- end data-page -->
+</div> <!- - end data-page -->
 
 
 
@@ -485,16 +485,25 @@
     $('#friendsListView').children('li').on('click', function () {
        //alert('index=' + $(this).attr('ind'));
        index=$(this).attr('ind'); //(put that attribute within the <li> tag, and you are done! :)
-       window.location = "#editFriend-page";
+       window.location = "#cards-page";
 
     });
       
   }//ASGA
 
   var index;
+  var history = [];
 
   function showNewFriend( side ){
-    updateNeed( side )
+    if ( isNumber( index ) ){
+      var name  = document.getElementById("friendName").innerHTML
+      var heart = document.getElementById("t_friend_heart").innerHTML
+      var will  = document.getElementById("t_friend_will").innerHTML
+      var help  = document.getElementById("t_friend_help").innerHTML
+      var need  = side == "right"? 100 : 50;
+      modifyFriend(index,name,heart,will,help,need)
+    }
+
     index = getRandomFriend();
     showFriend()
   }
@@ -590,11 +599,19 @@
 
 
   function showFriend () {
-    t_friend_heart
+    console.log( "Showing friend " + index)
+    var mJson = getData()
+    var friend = mJson.friends[index];
+    console.log(friend.name)
+    document.getElementById("friendName").innerHTML     = friend.name;
+    document.getElementById("t_friend_heart").innerHTML = friend.heart;
+    document.getElementById("t_friend_will").innerHTML  = friend.will;
+    document.getElementById("t_friend_help").innerHTML  = friend.help;
   }
 
 
   function modifyFriend (id,name,heart,will,help,need) {
+    console.log("Modifiying friend "+id+" "+name+" "+heart+" "+will+" "+help+" "+need)
   // Get data
     var mJson = getData()
     var original = mJson.friends[id];
@@ -613,7 +630,7 @@
 
 
 // Add new friend to the friendlist
-  function addFriend( ){ 
+  function addFriend(){ 
   // Get data
     var mJson = getData()
   // Parse and prepare new friend
@@ -666,51 +683,47 @@
     };
     return null;
   }
-    // MAE --
-    function getRandomFriend ( ) {
-      
 
-    // Get data
-    	var mJson = getData();
-    	var friends = mJson.friends;
-
-    // Compute the total need
-        var sum = 0;
-        for (var i = friends.length - 1; i >= 0; i--) {
-            sum += friends[i].need;
-        };
-    // Get random number below total need, and select the right friend
-        var choice = Math.random()*sum;
-        var soFar = 0;
-        for (var i = friends.length - 1; i >= 0; i--) {
-            soFar += friends[i].need;
-            if ( choice < soFar ) {
-            	return i;
-            }
-        };
-        return null;
-    }
-    // -- MAE
-
-  </script>
-
-
-    <script>
-
-      $("div").on("swipeleft",function(){
-        index-=1;
-        showFriend()
-      });   
+  function getRandomFriend ( ) {
     
-      $("div").on("swiperight",function(){
-        index+=1;
-        showFriend()
-      });
+  // Get data
+  	var mJson = getData();
+  	var friends = mJson.friends;
 
-      $("#myCard").on("taphold",function(){ //#myCard #friendName
-        //$(this).hide();
-        //window.location = "#editFriend-page";
-      });
+  // Compute the total need
+      var sum = 0;
+      for (var i = friends.length - 1; i >= 0; i--) {
+          sum += friends[i].need;
+      };
+  // Get random number below total need, and select the right friend
+      var choice = Math.random()*sum;
+      var soFar = 0;
+      for (var i = friends.length - 1; i >= 0; i--) {
+          soFar += friends[i].need;
+          if ( choice < soFar ) {
+          	return i;
+          }
+      };
+      return null;
+    }
+
+
+
+
+  $("div").on("swipeleft",function(){
+    var i = history.indexOf(index);
+    index = history[i-1] || index
+    showFriend()
+  });   
+
+  $("div").on("swiperight",function(){
+    showNewFriend()
+  });
+
+  /*$("#myCard").on("taphold",function(){ //#myCard #friendName
+    //$(this).hide();
+    //window.location = "#editFriend-page";
+  });*/
 
   </script>
 
@@ -935,6 +948,12 @@
 
     
     function login(){
+      window.location = "#cards-page";
+      showNewFriend("")
+      //document.getElementById("input_username").value
+
+    }
+    /*
       var action = "download";
       var json = "null";
 
@@ -946,7 +965,7 @@
       //save the data to make it easier for the user
       /*localStorage.user = user;
       localStorage.pass = pass;
-      document.getElementById("userHeader").innerHTML = user;*/
+      document.getElementById("userHeader").innerHTML = user;* /
 
       
 
@@ -991,7 +1010,12 @@
       
       xmlhttp.send("action="+action+"&user="+user+"&pass="+pass+"&json="+json);
       
-    }// end login
+    }// end login*/
+
+
+    function post ( url, params, onsucces, onerror ) {
+      // body...
+    }
 
 
 
