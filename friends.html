@@ -543,10 +543,13 @@
   }
 
   function showPreviousFriend () {
-    if ( showingPrevious!==0 && showingPrevious < printedFriends.length) {
+    console.log( "showingPrevious = "+showingPrevious )
+    if ( showingPrevious < printedFriends.length) {
       showingPrevious++;
     };
-    var previousIndex = printedFriends[printedFriends.length - showingPrevious];
+    console.log( "printedFriends.length = "+printedFriends.length )
+    var previousIndex = printedFriends[printedFriends.length - showingPrevious - 1];
+    console.log( "previousIndex = "+previousIndex )
     showFriend( previousIndex )
   }
 
@@ -793,11 +796,11 @@
 
 
   $( "div" ).on( "swipeleft", function(){
-    showPreviousFriend();
+    showNextFriend()
   });
 
   $( "div" ).on( "swiperight", function(){
-    showNextFriend()
+    showPreviousFriend();
   });
 
   /*$( "#myCard" ).on( "taphold", function(){ //#myCard #friendName
