@@ -20,6 +20,23 @@
   <script src="http://arrietaeguren.es/sop/toast/toastr.js"></script>
 
 
+<style type="text/css">
+  .num-container {
+    width: 100%;
+    display: inline-block;
+  }
+  .num-block {
+    display: inline-block;
+    box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    width: calc(33% - 10px)  !important;
+    height: 100px !important;
+    margin: 5px;
+    background: #d0d0d0 !important;
+    float: right  !important;
+  }
+
+</style>
 </head>
 
 
@@ -35,7 +52,19 @@
   <div data-role="main" class="ui-content">
     <p>User <input type="text" name="user" id="input_username" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username"></p>
     <p>Password <input type="password" id="input_password" name="pass" placeholder="Password"></p>
-    <input type="button" onClick="login()" value="Log in!">
+    <div class="num-container">
+      <button class="num-block" onclick="insertNumber('9')">9</button>
+      <button class="num-block" onclick="insertNumber('8')">8</button>
+      <button class="num-block" onclick="insertNumber('7')">7</button>
+      <button class="num-block" onclick="insertNumber('6')">6</button>
+      <button class="num-block" onclick="insertNumber('5')">5</button>
+      <button class="num-block" onclick="insertNumber('4')">4</button>
+      <button class="num-block" onclick="insertNumber('3')">3</button>
+      <button class="num-block" onclick="insertNumber('2')">2</button>
+      <button class="num-block" onclick="insertNumber('1')">1</button>
+      <button class="num-block" onClick="login()" style="width: calc(66% - 10px) !important;">Log in!</button>
+      <button class="num-block" onclick="clearNumber('1')">Clear</button>
+    </div>
     <input type="button" onClick="createUser()" value="New user">
   </div>
 
@@ -239,7 +268,7 @@
         <p>Password
         <input type="password" name="pass" id="passwordFormInput2" placeholder="password..."></p>
         <input type="button" onClick="login()" value="Log in!">
-        <input type="button" onClick="createUser()" value="Create an user">
+        <input type="button" onClick="createUser()" value="Create user">
     
 
   </div> <!-- end panel -->
@@ -291,7 +320,7 @@
   }
    
   // Get Browser Specific Hidden Property
-  function hiddenProperty(prefix ) {
+  function hiddenProperty( prefix ) {
     if ( prefix ) {
       return prefix + 'Hidden';
     } else {
@@ -300,7 +329,7 @@
   }
    
   // Get Browser Specific Visibility State
-  function visibilityState(prefix ) {
+  function visibilityState( prefix ) {
     if ( prefix ) {
       return prefix + 'VisibilityState';
     } else {
@@ -309,7 +338,7 @@
   }
    
   // Get Browser Specific Event
-  function visibilityEvent(prefix ) {
+  function visibilityEvent( prefix ) {
     if ( prefix ) {
       return prefix + 'visibilitychange';
     } else {
@@ -360,6 +389,14 @@
     make_editable( items[i].id )
   }
   
+  function insertNumber ( num ) {
+    var c = document.getElementById( "input_password" ).value;
+    document.getElementById( "input_password" ).value = c+num;
+  }
+
+  function clearNumber ( ) {
+    document.getElementById( "input_password" ).value = "";
+  }
 
 </script>
 
@@ -467,8 +504,8 @@
   function fillFriendsList(){//ASGA
 
     data = getData();
-    //json = {"friends":[{"name":"Berni", "intentions":["family", "beca"], "need":0.9}, {"name":"Fati", "intentions":["notas"], "need":0.7}, {"name":"Alex", "intentions":["notas", "gloria"], "need":0.5}]};
     array = data.friends;
+
     //---generate the html for the content of the listView
     listViewContentHtml = '';
     for ( i = 0; i < array.length; i++ ) { 
@@ -483,21 +520,34 @@
 
     //ASGA list view listener 
     $( '#friendsListView' ).children( 'li' ).on( 'click', function (){
-       //alert( 'index=' + $( this ).attr( 'ind' ) );
-       index=$( this ).attr( 'ind' ); //( put that attribute within the <li> tag, and you are done! :)
-       window.location = "#cards-page";
-
+       ind = $( this ).attr( 'ind' ); //( put that attribute within the <li> tag, and you are done! :)
+       showFriend( ind );
     });
       
   }//ASGA
 
   var index;
-  var history = [];
+  var printedFriends = [];
+  var showingPrevious = 0;
 
-  function showNewFriend( side ){
-    saveChangesToCurrentFriend();
-    index = getRandomFriend();
-    showFriend()
+  function showNextFriend(  ){
+    if ( showingPrevious > 0 ) {
+      showingPrevious--;
+      var previousIndex = printedFriends[printedFriends.length - showingPrevious];
+      showFriend( previousIndex );
+    } else{
+      var randomFriend = getRandomFriend();  // Pick a random friend
+      showFriend( randomFriend );            // Show selected friend
+      printedFriends.push( randomFriend );   // Remenber we have show this friend
+    }
+  }
+
+  function showPreviousFriend () {
+    if ( showingPrevious!==0 && showingPrevious < printedFriends.length) {
+      showingPrevious++;
+    };
+    var previousIndex = printedFriends[printedFriends.length - showingPrevious];
+    showFriend( previousIndex )
   }
 
   function updateNeed( side ) {
@@ -519,25 +569,42 @@
       var heart = document.getElementById( "t_friend_heart" ).innerHTML
       var will  = document.getElementById( "t_friend_will" ).innerHTML
       var help  = document.getElementById( "t_friend_help" ).innerHTML
-      var need  = side == "right"? 100 : 50;
+      //var need  = side == "right"? 100 : 50;
+      var need = 100;
       modifyFriend( index, name, heart, will, help, need )
     }
   }
  
   function isNumber( s ) {
-    return ( s ! == undefined && s ! == null )
+    return ( s !== undefined && s !== null )
   }
 
   function isString( s ) {
     return ( typeof s === 'string' || s instanceof String )
   }
 
-  function init() {//initialize the local storage...
+  // http://stackoverflow.com/questions/894860/set-a-default-parameter-value-for-a-javascript-function
+  function orUseDefault(arg, def) {
+   return (typeof arg == 'undefined' ? def : arg);
+  }
+
+  /*if (!Array.prototype.last){
+    Array.prototype.last = function( i ){
+        return this[this.length - i];
+    };
+  };*/
+
+
+  function init() {
+  //initialize the local storage...
     if ( !window.localStorage.friendsJson ){ //if there isn't data on the friends local storage:
       window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
     }
+    printedFriends = [];
+    showingPrevious = 0;
 
-//toast-bottom-center //toast-top-right
+
+  //toast-bottom-center //toast-top-right
     toastr.options = {
       "closeButton": false, 
       "debug": false, 
@@ -604,14 +671,24 @@
   }
 
 
-  function showFriend() {
+  function showFriend( ind ) {
+  // Save current data!
+    saveChangesToCurrentFriend();
+  // Check friend index
+    if ( !isNumber( ind ) ) return
+  // Get friend data
     var mJson = getData()
-    var friend = mJson.friends[index];
-    console.log( "Showing friend ( "+index+" ) "+friend.name )
+    if ( mJson.friends.length < ind ) return
+    var friend = mJson.friends[ind];
+  // Print data
+    console.log( "Showing friend ( "+ind+" ) "+friend.name )
     document.getElementById( "friendName" ).innerHTML     = friend.name;
     document.getElementById( "t_friend_heart" ).innerHTML = friend.heart;
     document.getElementById( "t_friend_will" ).innerHTML  = friend.will;
     document.getElementById( "t_friend_help" ).innerHTML  = friend.help;
+    window.location = "#cards-page";
+  // Update current index
+    index = ind;
   }
 
 
@@ -649,7 +726,7 @@
     mJson.friends.push( friend );
     saveData( mJson );
   //show added friend ( last one )
-    showFriend( mJson.friends.length );
+    showFriend( mJson.friends.length-1 );
   //confirm action to user
     toastr.success( "Added!" );
   }
@@ -716,13 +793,11 @@
 
 
   $( "div" ).on( "swipeleft", function(){
-    var i = history.indexOf( index );
-    index = history[i-1] || index
-    showFriend()
+    showPreviousFriend();
   });
 
   $( "div" ).on( "swiperight", function(){
-    showNewFriend()
+    showNextFriend()
   });
 
   /*$( "#myCard" ).on( "taphold", function(){ //#myCard #friendName
@@ -738,8 +813,8 @@
 
     //friend list page...
     $( document ).delegate( "#friend-list-page", "pagebeforeshow", function() {
-      //alert( 'reloading friends listview! :)' );
-      fillFriendsList(); //reload/fill the listView
+      saveChangesToCurrentFriend();
+      fillFriendsList();
     });
 
     
@@ -954,7 +1029,7 @@
     
     function login(){
       window.location = "#cards-page";
-      showNewFriend( "" )
+      showNextFriend( "" )
       //document.getElementById( "input_username" ).value
 
     }
@@ -1029,7 +1104,7 @@
     xmlhttp.onreadystatechange = function() {
       if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ){
         temp = JSON.parse( xmlhttp.responseText );
-        if( temp.Status && temp.Status ! == "Success" ){
+        if( temp.Status && temp.Status !== "Success" ){
           onerror( temp );
         } else {
           onsucces( temp );  
