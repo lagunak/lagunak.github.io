@@ -80,7 +80,7 @@
     <!--<a href="#editFriend-page" class="ui-btn ui-corner-all ui-icon-edit ui-btn-icon-left">Edit current friend</a>-->
     <a href="#friend-list-page" class="ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left">View friends list</a>
     <a href="#" onclick="addFriend();" class="ui-btn ui-corner-all ui-icon-plus ui-btn-icon-left">Add friend</a>
-    <a href="#" onclick="removeFriend();" class="ui-btn ui-corner-all ui-icon-plus ui-btn-icon-left">Remove friend</a>
+    <a href="#" onclick="removeFriend();" class="ui-btn ui-corner-all ui-icon-minus ui-btn-icon-left">Remove friend</a>
     <a href="#backup2-page" class="ui-btn ui-corner-all ui-icon-cloud ui-btn-icon-left">Backup</a>  
     <hr>
     <a href="#developer-page" class="ui-btn ui-corner-all ui-icon-gear ui-btn-icon-left">Developer</a>
@@ -375,6 +375,7 @@
       $( ta ).val( $( t ).text() )
       $( t ).hide()
       $( ta ).show()
+      $( ta ).focus()
     });
 
     $( ta ).mouseleave( function(){
@@ -567,15 +568,14 @@
   }
 
   function saveChangesToCurrentFriend() {
-    if ( isNumber( index ) ){
-      var name  = document.getElementById( "friendName" ).innerHTML
-      var heart = document.getElementById( "t_friend_heart" ).innerHTML
-      var will  = document.getElementById( "t_friend_will" ).innerHTML
-      var help  = document.getElementById( "t_friend_help" ).innerHTML
-      //var need  = side == "right"? 100 : 50;
-      var need = 100;
-      modifyFriend( index, name, heart, will, help, need )
-    }
+    if ( !isNumber( index ) ) return;
+    var name  = document.getElementById( "friendName" ).innerHTML
+    var heart = document.getElementById( "t_friend_heart" ).innerHTML
+    var will  = document.getElementById( "t_friend_will" ).innerHTML
+    var help  = document.getElementById( "t_friend_help" ).innerHTML
+    //var need  = side == "right"? 100 : 50;
+    var need = 100;
+    modifyFriend( index, name, heart, will, help, need )
   }
  
   function isNumber( s ) {
@@ -603,7 +603,7 @@
     if ( !window.localStorage.friendsJson ){ //if there isn't data on the friends local storage:
       window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
     }
-    printedFriends = [];
+    printedFriends  = [];
     showingPrevious = 0;
 
 
@@ -645,12 +645,18 @@
 
 
   function removeFriend(){
-    window.alert( "about to remove..." );
+  // Check the user is sure about this...
     if ( !isNumber( index ) ) return
     var data = getData();
     var tempName = data.friends[index].name;
-    data.friends.splice( index, 1 );       
+    var r = confirm("Are you sure you want to delete "+tempName+"? This can't be undone.");
+    if ( r == false ) return;
+  // Delete element and avoid interacting with deleted index
+    data.friends.splice( index, 1 );
+    index = null;
+  // Save data and show
     saveData( data );
+    showNextFriend();
     toastr.success( tempName + " deleted!" );
   }
 
@@ -678,7 +684,10 @@
   // Save current data!
     saveChangesToCurrentFriend();
   // Check friend index
-    if ( !isNumber( ind ) ) return
+    if ( !isNumber( ind ) ) {
+      alert("Bad thing happen")
+      return;
+    }
   // Get friend data
     var mJson = getData()
     if ( mJson.friends.length < ind ) return
@@ -696,6 +705,7 @@
 
 
   function modifyFriend( id, name, heart, will, help, need ) {
+    if ( !isNumber( index ) ) return;
     console.log( "Modifiying friend "+id+" "+name+" "+heart+" "+will+" "+help+" "+need )
   // Get data
     var mJson = getData()
@@ -1031,10 +1041,7 @@
 
     
     function login(){
-      window.location = "#cards-page";
-      showNextFriend( "" )
-      //document.getElementById( "input_username" ).value
-
+      showNextFriend()
     }
     /*
       var action = "download";
