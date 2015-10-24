@@ -19,6 +19,9 @@
   <link href="http://arrietaeguren.es/sop/toast/toastr2.css" rel="stylesheet"/>
   <script src="http://arrietaeguren.es/sop/toast/toastr.js"></script>
 
+  <!-- javascript crypto http://bitwiseshiftleft.github.io/sjcl/-->
+  <script src="sjcl.js"></script>  
+
 
 <style type="text/css">
   .num-container {
@@ -50,8 +53,7 @@
 <div data-role="page" id="login-page">
 
   <div data-role="main" class="ui-content">
-    <p>User <input type="text" name="user" id="input_username" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username"></p>
-    <p>Password <input type="password" id="input_password" name="pass" placeholder="Password"></p>
+    <p>Welcome back Miguel! Insert your pin <input type="password" id="input_password" name="pass" placeholder="PIN"></p>
     <div class="num-container">
       <button class="num-block" onclick="insertNumber('9')">9</button>
       <button class="num-block" onclick="insertNumber('8')">8</button>
@@ -63,8 +65,19 @@
       <button class="num-block" onclick="insertNumber('2')">2</button>
       <button class="num-block" onclick="insertNumber('1')">1</button>
       <button class="num-block" onClick="login()" style="width: calc(66% - 10px) !important;">Log in!</button>
-      <button class="num-block" onclick="clearNumber('1')">Clear</button>
+      <button class="num-block" onclick="clearPin()">Clear</button>
     </div>
+    <input type="button" onClick="createUser()" value="Not Miguel?">
+  </div>
+
+</div>
+
+<!-- ***********   LOGIN-PAGE **********************  -->
+<div data-role="page" id="new-user-page">
+
+  <div data-role="main" class="ui-content">
+    <p>User <input type="text" name="user" id="input_username" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username"></p>
+    <p>Password <input type="password" id="input_password2" name="pass" placeholder="Password"></p>
     <input type="button" onClick="createUser()" value="New user">
   </div>
 
@@ -359,6 +372,9 @@
     } else {
      // The page is hidden. 
      console.log( "hidden" )
+     g_friends = null;
+     clearPin();
+     window.location = "#login-page";
     }
   });
 
@@ -382,6 +398,7 @@
       $( t ).text( $( ta ).val() )
       $( ta ).hide()
       $( t ).show()
+      saveChangesToCurrentFriend();
     });
   }
 
@@ -395,7 +412,7 @@
     document.getElementById( "input_password" ).value = c+num;
   }
 
-  function clearNumber ( ) {
+  function clearPin ( ) {
     document.getElementById( "input_password" ).value = "";
   }
 
@@ -527,55 +544,56 @@
       
   }//ASGA
 
-  var index;
-  var printedFriends = [];
-  var showingPrevious = 0;
+  var g_index;
+  var g_printedFriends = [];
+  var g_showingPrevious = 0;
+  var g_friends;
 
   function showNextFriend(  ){
-    if ( showingPrevious > 0 ) {
-      showingPrevious--;
-      var previousIndex = printedFriends[printedFriends.length - showingPrevious];
+    if ( g_showingPrevious > 0 ) {
+      g_showingPrevious--;
+      var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious];
       showFriend( previousIndex );
     } else{
       var randomFriend = getRandomFriend();  // Pick a random friend
       showFriend( randomFriend );            // Show selected friend
-      printedFriends.push( randomFriend );   // Remenber we have show this friend
+      g_printedFriends.push( randomFriend );   // Remenber we have show this friend
     }
   }
 
   function showPreviousFriend () {
-    console.log( "showingPrevious = "+showingPrevious )
-    if ( showingPrevious < printedFriends.length) {
-      showingPrevious++;
+    console.log( "g_showingPrevious = "+g_showingPrevious )
+    if ( g_showingPrevious < g_printedFriends.length) {
+      g_showingPrevious++;
     };
-    console.log( "printedFriends.length = "+printedFriends.length )
-    var previousIndex = printedFriends[printedFriends.length - showingPrevious - 1];
+    console.log( "g_printedFriends.length = "+g_printedFriends.length )
+    var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious - 1];
     console.log( "previousIndex = "+previousIndex )
     showFriend( previousIndex )
   }
 
   function updateNeed( side ) {
     var data = getData();
-    if ( !isNumber( index ) ) return
-    var need = mJson.friends[index].need*10;
+    if ( !isNumber( g_index ) ) return
+    var need = mJson.friends[g_index].need*10;
     if ( side == "right" ) {
       need = need<9? need+1 : 10;
     } else if ( side == "left" ) {
       need = need>3? need-1 : 2;
     };
-    mJson.friends[index].need = need/10;
+    mJson.friends[g_index].need = need/10;
     saveData( mJson )
   }
 
   function saveChangesToCurrentFriend() {
-    if ( !isNumber( index ) ) return;
+    if ( !isNumber( g_index ) ) return;
     var name  = document.getElementById( "friendName" ).innerHTML
     var heart = document.getElementById( "t_friend_heart" ).innerHTML
     var will  = document.getElementById( "t_friend_will" ).innerHTML
     var help  = document.getElementById( "t_friend_help" ).innerHTML
     //var need  = side == "right"? 100 : 50;
     var need = 100;
-    modifyFriend( index, name, heart, will, help, need )
+    modifyFriend( g_index, name, heart, will, help, need )
   }
  
   function isNumber( s ) {
@@ -599,13 +617,11 @@
 
 
   function init() {
-  //initialize the local storage...
-    if ( !window.localStorage.friendsJson ){ //if there isn't data on the friends local storage:
-      window.localStorage.friendsJson = '{"friends":[]}'; //initialize the empty json
-    }
-    printedFriends  = [];
-    showingPrevious = 0;
+  //initialize vars...
+    g_printedFriends  = [];
+    g_showingPrevious = 0;
 
+    window.location = "#login-page";
 
   //toast-bottom-center //toast-top-right
     toastr.options = {
@@ -625,6 +641,8 @@
       "showMethod": "fadeIn", 
       "hideMethod": "fadeOut"
     }
+
+
   }
 
  
@@ -646,14 +664,14 @@
 
   function removeFriend(){
   // Check the user is sure about this...
-    if ( !isNumber( index ) ) return
+    if ( !isNumber( g_index ) ) return
     var data = getData();
-    var tempName = data.friends[index].name;
+    var tempName = data.friends[g_index].name;
     var r = confirm("Are you sure you want to delete "+tempName+"? This can't be undone.");
     if ( r == false ) return;
-  // Delete element and avoid interacting with deleted index
-    data.friends.splice( index, 1 );
-    index = null;
+  // Delete element and avoid interacting with deleted g_index
+    data.friends.splice( g_index, 1 );
+    g_index = null;
   // Save data and show
     saveData( data );
     showNextFriend();
@@ -662,27 +680,35 @@
 
 
   function getData(){
-    if ( localStorage.friendsJson ) {
+    return g_friends;
+    /*if ( localStorage.friendsJson ) {
       return JSON.parse( localStorage.friendsJson );
     } else{
       return false;
-    };
+    };*/
   }
 
 
   function saveData ( data ) {
     console.log( "Saving" )
-    if( !data ) return;
-    temp = JSON.stringify( data );
-    if( !temp ) return;
-    localStorage.friendsJson = temp;
+    try{
+      temp = JSON.stringify( data );  
+    }catch(e){
+      alert(e);
+      return false;
+    }
+    // localStorage.friendsJson = temp
+    g_friends = data;
+    var pass = document.getElementById( "input_password" ).value;
+    var enc_json = sjcl.encrypt( pass, temp );
+    localStorage.encryptedFriends = enc_json;
     return true;
   }
 
 
   function showFriend( ind ) {
   // Save current data!
-    saveChangesToCurrentFriend();
+    //saveChangesToCurrentFriend();
   // Check friend index
     if ( !isNumber( ind ) ) {
       alert("Bad thing happen")
@@ -700,12 +726,12 @@
     document.getElementById( "t_friend_help" ).innerHTML  = friend.help;
     window.location = "#cards-page";
   // Update current index
-    index = ind;
+    g_index = ind;
   }
 
 
   function modifyFriend( id, name, heart, will, help, need ) {
-    if ( !isNumber( index ) ) return;
+    if ( !isNumber( id ) ) return;
     console.log( "Modifiying friend "+id+" "+name+" "+heart+" "+will+" "+help+" "+need )
   // Get data
     var mJson = getData()
@@ -826,7 +852,7 @@
 
     //friend list page...
     $( document ).delegate( "#friend-list-page", "pagebeforeshow", function() {
-      saveChangesToCurrentFriend();
+      //saveChangesToCurrentFriend();
       fillFriendsList();
     });
 
@@ -878,7 +904,7 @@
         mval = $( this ).val() / 10 ;
     
 
-        tempJsonn.friends[index].need = mval;
+        tempJsonn.friends[g_index].need = mval;
         var s = JSON.stringify( tempJsonn );
      
 
@@ -1039,9 +1065,24 @@
 
     }
 
-    
+    //http://bitwiseshiftleft.github.io/sjcl/
     function login(){
-      showNextFriend()
+      var pass = document.getElementById( "input_password" ).value;
+      if ( localStorage.encryptedFriends ) {
+        var dec_json = sjcl.decrypt( pass, localStorage.encryptedFriends );
+        try{
+          console.log( "hola")
+          var temp = JSON.parse( dec_json ); 
+          saveData( temp );
+          return showNextFriend();
+        }catch(e){
+          alert("Sorry, wrong password");
+        }
+      } else{
+        console.log( "hola2")
+        g_friends = {"friends":[]};
+        addFriend();
+      };
     }
     /*
       var action = "download";
