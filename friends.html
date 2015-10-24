@@ -395,6 +395,10 @@
     });
 
     $( ta ).mouseleave( function(){
+      $( ta ).blur();
+    });
+
+    $( ta ).blur( function() {
       $( t ).text( $( ta ).val() )
       $( ta ).hide()
       $( t ).show()
@@ -552,24 +556,27 @@
   function showNextFriend(  ){
     if ( g_showingPrevious > 0 ) {
       g_showingPrevious--;
-      var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious];
+      var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious -1];
       showFriend( previousIndex );
     } else{
       var randomFriend = getRandomFriend();  // Pick a random friend
       showFriend( randomFriend );            // Show selected friend
       g_printedFriends.push( randomFriend );   // Remenber we have show this friend
     }
+    console.log( "previousIndex = "+previousIndex )
+    console.log( "g_showingPrevious = "+g_showingPrevious )
+    console.log( "g_printedFriends.length = "+g_printedFriends.length )
   }
 
   function showPreviousFriend () {
-    console.log( "g_showingPrevious = "+g_showingPrevious )
     if ( g_showingPrevious < g_printedFriends.length) {
       g_showingPrevious++;
     };
-    console.log( "g_printedFriends.length = "+g_printedFriends.length )
-    var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious - 1];
-    console.log( "previousIndex = "+previousIndex )
+    var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious -1];
     showFriend( previousIndex )
+    console.log( "previousIndex = "+previousIndex )
+    console.log( "g_showingPrevious = "+g_showingPrevious )
+    console.log( "g_printedFriends.length = "+g_printedFriends.length )
   }
 
   function updateNeed( side ) {
@@ -711,6 +718,7 @@
     //saveChangesToCurrentFriend();
   // Check friend index
     if ( !isNumber( ind ) ) {
+      console.log("No hay indice!")
       alert("Bad thing happen")
       return;
     }
@@ -766,6 +774,7 @@
     saveData( mJson );
   //show added friend ( last one )
     showFriend( mJson.friends.length-1 );
+    g_printedFriends.push( mJson.friends.length-1 );   // Remenber we have show this friend
   //confirm action to user
     toastr.success( "Added!" );
   }
@@ -812,21 +821,22 @@
   	var friends = mJson.friends;
 
   // Compute the total need
-      var sum = 0;
-      for ( var i = friends.length - 1; i >= 0; i-- ) {
-          sum += friends[i].need;
-      };
+    var sum = 0;
+    for ( var i = friends.length - 1; i >= 0; i-- ) {
+        sum += friends[i].need;
+    };
   // Get random number below total need, and select the right friend
-      var choice = Math.random()*sum;
-      var soFar = 0;
-      for ( var i = friends.length - 1; i >= 0; i-- ) {
-          soFar += friends[i].need;
-          if ( choice < soFar ) {
-          	return i;
-          }
-      };
-      return null;
-    }
+    var choice = Math.random()*sum;
+    var soFar  = 0;
+    for ( var i = friends.length - 1; i >= 0; i-- ) {
+        soFar += friends[i].need;
+        if ( choice < soFar ) {
+        	return i;
+        }
+    };
+    alert("Failed to generate random number!")
+    return null;
+  }
 
 
 
