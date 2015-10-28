@@ -67,20 +67,30 @@
       <button class="num-block" onClick="login()" style="width: calc(66% - 10px) !important;">Log in!</button>
       <button class="num-block" onclick="clearPin()">Clear</button>
     </div>
-    <input type="button" onClick="createUser()" value="Not Miguel?">
+    <a href="#new-user-page" class="ui-btn">Not Miguel?</a>
   </div>
 
 </div>
 
-<!-- ***********   LOGIN-PAGE **********************  -->
+<!-- ***********   NEW-USER-PAGE **********************  -->
 <div data-role="page" id="new-user-page">
 
   <div data-role="main" class="ui-content">
     <p>User <input type="text" name="user" id="input_username" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username"></p>
     <p>Password <input type="password" id="input_password2" name="pass" placeholder="Password"></p>
-    <input type="button" onClick="createUser()" value="New user">
+    <input type="button" onClick="createUser()" value="Creae new user">
   </div>
+</div>
 
+<!-- *********** WELCOME-PAGE **********************  -->
+<div data-role="page" id="welcome-page">
+
+  <div id="myCard" class="ui-content">      
+    <h1>Welcome!</h1><hr>
+    <p id="tip"></p>
+    <button onclick="showNextFriend()">Chat with God about my friends</button>
+    <button onclick="fastPray()">Insist God to help my friends</button>
+  </div>
 </div>
 
 
@@ -569,7 +579,7 @@
   }
 
   function showPreviousFriend () {
-    if ( g_showingPrevious < g_printedFriends.length) {
+    if ( g_showingPrevious < g_printedFriends.length - 1 ) {
       g_showingPrevious++;
     };
     var previousIndex = g_printedFriends[g_printedFriends.length - g_showingPrevious -1];
@@ -779,6 +789,16 @@
     toastr.success( "Added!" );
   }
 
+  function showTip( tip ) {
+    var tips = [
+      '"Pasamos mucho mas tiempo con nosotros mismos que con otros. Abre los ojos y descubre sus problemas"',
+      '"Al final de la vida, nos examinarán del Amor"',
+      '"Nosotros le amamos a él, porque él nos amó primero. 1 Juan 4"'
+    ];
+    var rand_tip = tips[Math.floor(Math.random() * tips.length)];
+    document.getElementById( "tip" ).innerHTML = rand_tip; 
+  }
+
   function getField( data, field ) {
     var values = []
     for( x in data )
@@ -823,18 +843,20 @@
   // Compute the total need
     var sum = 0;
     for ( var i = friends.length - 1; i >= 0; i-- ) {
-        sum += friends[i].need;
+      if ( g_printedFriends.indexOf(i) > -1 ) continue;
+      sum += friends[i].need;
     };
   // Get random number below total need, and select the right friend
     var choice = Math.random()*sum;
     var soFar  = 0;
     for ( var i = friends.length - 1; i >= 0; i-- ) {
-        soFar += friends[i].need;
-        if ( choice < soFar ) {
-        	return i;
-        }
+      if ( g_printedFriends.indexOf(i) > -1 ) continue;
+      soFar += friends[i].need;
+      if ( choice < soFar ) { 
+      	return i;
+      }
     };
-    alert("Failed to generate random number!")
+    alert("Well done! You have prayed for all your friends")
     return null;
   }
 
@@ -1079,17 +1101,16 @@
     function login(){
       var pass = document.getElementById( "input_password" ).value;
       if ( localStorage.encryptedFriends ) {
-        var dec_json = sjcl.decrypt( pass, localStorage.encryptedFriends );
         try{
-          console.log( "hola")
+          var dec_json = sjcl.decrypt( pass, localStorage.encryptedFriends );
           var temp = JSON.parse( dec_json ); 
           saveData( temp );
-          return showNextFriend();
+          window.location = "#welcome-page";
+          showTip();
         }catch(e){
           alert("Sorry, wrong password");
         }
       } else{
-        console.log( "hola2")
         g_friends = {"friends":[]};
         addFriend();
       };
